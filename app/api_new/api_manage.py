@@ -1,8 +1,9 @@
 appKey = 'abc'
 
+
 class api_manage():
 
-    def build_api_url(self,api_info,osign_list,type='default',host_id=''):
+    def build_api_url(self, api_info, osign_list, type='default', host_id=''):
         """
         Build test url for given api info.
 
@@ -17,33 +18,33 @@ class api_manage():
             4:sdk-test1 cn
         :return:  the final url.
         """
-        para_info = self.get_para_info(api_info,osign_list,type=type)
-        if host_id =='':
+        para_info = self.get_para_info(api_info, osign_list, type=type)
+        if host_id == '':
             host = api_info['url']['host']
         else:
             from app.api_new import paras
             host = getattr(paras.paraValues(), 'sdkHosts')[host_id]
-        url = host+api_info['url']['url']+'?'+self.dict_2_str(para_info)
+        url = host + api_info['url']['url'] + '?' + self.dict_2_str(para_info)
         return url
 
-    def split_api_info(self,example_url):
+    def split_api_info(self, example_url):
         """
         This function will split all infomation from a given url, including host, url path,paras.
 
         :param
         """
-        api_url,para_url = example_url.split('?')
+        api_url, para_url = example_url.split('?')
         paras = para_url.split('&')
         para_list = {}
         for para in paras:
-            para_name,value = para.split('=')
-            para_list[para_name]=value
+            para_name, value = para.split('=')
+            para_list[para_name] = value
         api_info = {}
-        api_info['url']=self.split_url_info(api_url)
-        api_info['paras']=para_list
+        api_info['url'] = self.split_url_info(api_url)
+        api_info['paras'] = para_list
         return api_info
 
-    def split_url_info(self,url):
+    def split_url_info(self, url):
         """
         This function will split all infomation from a given url, including host, url path,type.
 
@@ -53,21 +54,21 @@ class api_manage():
             url ： /api/login/test.do
             type： /api
         """
-        api_type_list = ['/api/']   # 可根据接口格式，自定义对应的分隔关键字
-        url_info={}
-        host, api_url ,type ='','',''
+        api_type_list = ['/api/']  # 可根据接口格式，自定义对应的分隔关键字
+        url_info = {}
+        host, api_url, type = '', '', ''
         for api_type in api_type_list:
             if api_type in url:
-                host,api_url = url.split(api_type)
-                api_url = api_type+api_url
-                type = api_type.replace('/','')
+                host, api_url = url.split(api_type)
+                api_url = api_type + api_url
+                type = api_type.replace('/', '')
                 break
-        url_info['host']=host
-        url_info['url']=api_url
-        url_info['type']=type
+        url_info['host'] = host
+        url_info['url'] = api_url
+        url_info['type'] = type
         return url_info
 
-    def get_para_info(self,api_info,osign_list,type='default', needOsign=True):
+    def get_para_info(self, api_info, osign_list, type='default', needOsign=True):
         """
         Get target value for all paras and do the osign process.
 
@@ -78,13 +79,12 @@ class api_manage():
         :return:
         """
         para_info = api_info['paras']
-        para_info = self.get_api_paras(para_info,type=type)
+        para_info = self.get_api_paras(para_info, type=type)
         if needOsign:
-            para_info = self.api_osign(para_info,osign_list,appkey=appKey)
+            para_info = self.api_osign(para_info, osign_list, appkey=appKey)
         return para_info
 
-
-    def get_api_paras(self,para_info,type='default'):
+    def get_api_paras(self, para_info, type='default'):
         """
         Convert all changeable values in the para list.
 
@@ -94,10 +94,10 @@ class api_manage():
         """
         for para in para_info:
             if '{' in para_info[para] and '}' in para_info[para]:
-                para_info[para]=self.get_para_values(para_info[para],type=type)
+                para_info[para] = self.get_para_values(para_info[para], type=type)
         return para_info
 
-    def get_para_values(self,para_name,type='default'):
+    def get_para_values(self, para_name, type='default'):
         """
         Convert para's value to target value.  If you want to set a para to be changeable, set the value to be {paraname} in api info.
         the value is saved on paras.py , such as :
@@ -108,27 +108,27 @@ class api_manage():
             all :  return the the whole value list.
         :return:
         """
-        para_name = para_name.replace('{','')
-        para_name = para_name.replace('}','')
+        para_name = para_name.replace('{', '')
+        para_name = para_name.replace('}', '')
         from app.api_new import paras
         try:
             values = getattr(paras.paraValues(), para_name)
         except AttributeError as e:
             print(e)
             values = []
-        if len(values)>1:
-            if type=='all':
+        if len(values) > 1:
+            if type == 'all':
                 return values
             elif type == 'random':
                 import random
-                randomIndex = random.randrange(1,100)%len(values)
+                randomIndex = random.randrange(1, 100) % len(values)
                 return values[randomIndex]
             else:
                 return values[0]
         else:
             return values
 
-    def api_osign(self,para_info, osign_list,appkey=appKey):
+    def api_osign(self, para_info, osign_list, appkey=appKey):
         """
         Calculate the osign value using the osign list.
         :param para_info:
@@ -139,7 +139,7 @@ class api_manage():
         para_info['osign'] = self.getOsign(para_info, osign_list, appkey=appkey)
         return para_info
 
-    def getOsign(self,para_info, osignList, appkey):
+    def getOsign(self, para_info, osignList, appkey):
         """
         The real osign method.
 
@@ -149,7 +149,7 @@ class api_manage():
         :return:
         """
         paraPand = ''
-        print('osign list is :',osignList)
+        print('osign list is :', osignList)
         for para in osignList:
             if para == 'appKey':
                 paraPand += appkey
@@ -159,7 +159,7 @@ class api_manage():
         print(paraPand)
         return self.md5(paraPand)
 
-    def md5(self,preosign):
+    def md5(self, preosign):
         """
         MD5 osign.
         :param preosign:
@@ -172,7 +172,7 @@ class api_manage():
         m.update(preosign)
         return m.hexdigest()
 
-    def dict_2_str(self,para_info):
+    def dict_2_str(self, para_info):
         '''
         将字典变成，key='value',key='value' 的形式
         '''
@@ -184,9 +184,7 @@ class api_manage():
                 tmplist.append(tmp)
         return '&'.join(tmplist)
 
-
-
-    def sendRequest(self,url, usingHeader=True):
+    def sendRequest(self, url, usingHeader=True):
         import httplib2
         print(url)
         http = httplib2.Http(timeout=30)
@@ -195,7 +193,7 @@ class api_manage():
         while tryTime:
             try:
                 if usingHeader:
-                    response, content = http.request(url, 'POST',body='', headers=headers)
+                    response, content = http.request(url, 'POST', body='', headers=headers)
                 else:
                     response, content = http.request(url, 'POST', headers=headers)
                 content = content.decode('utf-8')
@@ -205,4 +203,3 @@ class api_manage():
                 content = e
                 tryTime += -1
         return response, content
-

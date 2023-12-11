@@ -1,7 +1,7 @@
-
 # -*- coding: utf-8 -*-
 from app import config
 from app import logsql as log
+
 
 class sqliteDB(object):
 
@@ -39,7 +39,7 @@ class sqliteDB(object):
         cursor.close()
         try:
             conn.commit()
-        except :
+        except:
             log.log().logger.info('commit error')
         conn.close()
 
@@ -52,8 +52,9 @@ class mysqlDB(object):
     def connect(self):
         # change root password to yours:
         import mysql.connector
-        conn = mysql.connector.connect(host=config.db_host, port=config.db_port, user=config.db_user, password=config.db_password, database=config.database,
-                              auth_plugin='mysql_native_password')
+        conn = mysql.connector.connect(host=config.db_host, port=config.db_port, user=config.db_user,
+                                       password=config.db_password, database=config.database,
+                                       auth_plugin='mysql_native_password')
         return conn
 
     def search(self, sql):
@@ -75,7 +76,7 @@ class mysqlDB(object):
         cursor.close()
         try:
             conn.commit()
-        except :
+        except:
             log.log().logger.error('commit error')
         conn.close()
 
@@ -100,26 +101,27 @@ class mysqlDB(object):
         cursor.close()
         return values
 
+
 class useDB(object):
 
     def __init__(self):
         self.DBtype = config.DBtype
         return
 
-    def insert(self,sql):
+    def insert(self, sql):
         if self.DBtype == '1':
             sqliteDB().insert(sql)
         else:
             mysqlDB().insert(sql)
 
-    def search(self,sql):
+    def search(self, sql):
         if self.DBtype == '1':
             return sqliteDB().search(sql)
         else:
             return mysqlDB().search(sql)
 
-    def searchsql(self, sql,args):
+    def searchsql(self, sql, args):
         if self.DBtype == '1':
             return sqliteDB().search(sql)
         else:
-            return mysqlDB().searchsql(sql,args)
+            return mysqlDB().searchsql(sql, args)

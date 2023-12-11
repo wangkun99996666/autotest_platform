@@ -1,28 +1,29 @@
-from app import useDB,log
+from app import useDB, log
 import string
+
 
 class test_suite_manage:
     def __init__(self):
         self.status = 0
         self.name = ''
 
-    def new_test_suite(self,name,run_type,description,batchId):
-        sql = string.Template('insert into test_suite (name,run_type,description,batchId) values ("$name","$run_type","$description","$batchId");')
-        sql = sql.substitute(name = name, run_type = run_type, description = description,batchId=batchId)
+    def new_test_suite(self, name, run_type, description, batchId):
+        sql = string.Template(
+            'insert into test_suite (name,run_type,description,batchId) values ("$name","$run_type","$description","$batchId");')
+        sql = sql.substitute(name=name, run_type=run_type, description=description, batchId=batchId)
         useDB.useDB().insert(sql)
 
-
-    def update_test_suite(self,id,fieldlist,valueList):
-        update_value = '%s = "%s"' %(fieldlist[0],valueList[0])
-        for i in range(1,len(fieldlist)):
-            update_value += ', %s = "%s"' %(fieldlist[i],valueList[i])
+    def update_test_suite(self, id, fieldlist, valueList):
+        update_value = '%s = "%s"' % (fieldlist[0], valueList[0])
+        for i in range(1, len(fieldlist)):
+            update_value += ', %s = "%s"' % (fieldlist[i], valueList[i])
         sql = string.Template('update test_suite set $field where id = "$id";')
-        sql = sql.substitute(field = update_value, id = id)
+        sql = sql.substitute(field=update_value, id=id)
         useDB.useDB().insert(sql)
 
-    def search_test_suite(self,id,field):
+    def search_test_suite(self, id, field):
         sql = string.Template('select $field from test_suite where id = $id;')
-        sql = sql.substitute(field = field,id = id)
+        sql = sql.substitute(field=field, id=id)
         result = useDB.useDB().search(sql)
         log.log().logger.info(result)
         if len(result):
@@ -36,7 +37,7 @@ class test_suite_manage:
                 else:
                     result = result[0][0]
         else:
-            result=[]
+            result = []
         return result
 
     def search_test_suite_list(self):
@@ -102,8 +103,8 @@ class test_suite_manage:
         # log.log().logger.info(results)
         return results
 
-    def new_test_run_list(self,Id):
-        sql = 'update test_suite set status = 0,runCount=1 where id = %s;' %str(Id)
+    def new_test_run_list(self, Id):
+        sql = 'update test_suite set status = 0,runCount=1 where id = %s;' % str(Id)
         useDB.useDB().insert(sql)
 
     def test_suite_list(self, type):
@@ -111,11 +112,11 @@ class test_suite_manage:
         idList = useDB.useDB().search(sql)
         return idList
 
-    def copy_test_suite(self,id,batchId):
+    def copy_test_suite(self, id, batchId):
         # module, name, steps, description, isPublic
-        result = self.show_test_suites(['id'],[id],[],1)
+        result = self.show_test_suites(['id'], [id], [], 1)
         if len(result):
-            result=result[0]
+            result = result[0]
             run_type = ''
             if result["run_type"] == 'Chrome':
                 run_type = 2
@@ -123,7 +124,7 @@ class test_suite_manage:
                 run_type = 0
             elif result["run_type"] == 'iOS':
                 run_type = 1
-            self.new_test_suite(result["name"],str(run_type),result["description"],batchId )
+            self.new_test_suite(result["name"], str(run_type), result["description"], batchId)
             result = 1
         else:
             result = 0

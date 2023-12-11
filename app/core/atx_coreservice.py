@@ -14,7 +14,7 @@ def main():
         process.process().atxMain()
         result2 = 0
     else:
-        result2=1
+        result2 = 1
     result = result2
     return result
 
@@ -25,7 +25,8 @@ def coreservice():
     :return:
     """
     while (1):
-        if(main()):
+        if (main()):
             time.sleep(6)
+
 
 coreservice()

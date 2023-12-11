@@ -1,19 +1,20 @@
-from app import useDB,log
+from app import useDB, log
 import string
+
 
 class test_unittest_manage:
 
-    def new_unittest_case(self,reportName, start_time, end_time, reportFileName):
+    def new_unittest_case(self, reportName, start_time, end_time, reportFileName):
         sql = 'insert into unittest_record (name,start_time,end_time,file_name) values ("%s","%s","%s","%s");' % (
-        reportName, start_time, end_time, reportFileName)
+            reportName, start_time, end_time, reportFileName)
         useDB.useDB().insert(sql)
 
-    def show_unittest_records(self,conditionList, valueList, fieldlist,rows):
-        if len(fieldlist)==0:
-            fieldlist = ['id',  'name', 'start_time', 'end_time','file_name']
+    def show_unittest_records(self, conditionList, valueList, fieldlist, rows):
+        if len(fieldlist) == 0:
+            fieldlist = ['id', 'name', 'start_time', 'end_time', 'file_name']
         search_value = fieldlist[0]
-        for i in range(1,len(fieldlist)):
-            search_value = search_value + ','+fieldlist[i]
+        for i in range(1, len(fieldlist)):
+            search_value = search_value + ',' + fieldlist[i]
         condition = ''
         for i in range(len(conditionList)):
             if i == 0:
@@ -23,9 +24,10 @@ class test_unittest_manage:
 
         results = []
 
-        sql = 'select ' + search_value + ' from unittest_record where ' + str(condition) + 'order by id desc limit '+ str(rows)+';'
+        sql = 'select ' + search_value + ' from unittest_record where ' + str(
+            condition) + 'order by id desc limit ' + str(rows) + ';'
         cases = useDB.useDB().search(sql)
-        log.log().logger.info('cases : %s' %cases)
+        log.log().logger.info('cases : %s' % cases)
         for i in range(len(cases)):
             result = {}
             result['id'] = cases[i][0]
@@ -36,4 +38,3 @@ class test_unittest_manage:
             results.append(result)
         # log.log().logger.info(results)
         return results
-

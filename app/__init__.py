@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_bootstrap import Bootstrap
-from app.view import user,uitest,utils,apinew,minder,minderfiles
+from app.view import user, uitest, utils, apinew, minder, minderfiles
 
 app = Flask(__name__)
 app.config.from_object('config')

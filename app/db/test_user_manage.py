@@ -1,13 +1,14 @@
-from app import useDB,log
+from app import useDB, log
 import string
+
 
 class test_user_manage:
 
-    def checklogin(self,username,password):
+    def checklogin(self, username, password):
         sql = 'select id,username from  auth_user where 1=1 and  username=%s and password=%s'
-        args = (username,password)
-        list = useDB.useDB().searchsql(sql,args)
-        results=[]
+        args = (username, password)
+        list = useDB.useDB().searchsql(sql, args)
+        results = []
         for i in range(len(list)):
             result = {}
             result['id'] = list[i][0]
@@ -15,9 +16,9 @@ class test_user_manage:
             results.append(result)
         return results
 
-    def show_users(self,username):
+    def show_users(self, username):
         results = []
-        if username=='':
+        if username == '':
             sql = 'select id, username from auth_user order by id desc ;'
         else:
             sql = 'select id, username from auth_user where username like "%' + username + '%" order by id desc;'
@@ -30,12 +31,12 @@ class test_user_manage:
         # print(results)
         return results
 
-    def new_user(self, username,password):
+    def new_user(self, username, password):
         users = self.show_users(username)
         if len(users):
             return 0
         else:
-            sql = 'insert into auth_user (username,password) values ("%s","%s");' %(username,password)
+            sql = 'insert into auth_user (username,password) values ("%s","%s");' % (username, password)
             # print(sql)
             useDB.useDB().insert(sql)
             return 1
@@ -47,4 +48,3 @@ class test_user_manage:
         sql = string.Template('update auth_user set $field where id = "$id";')
         sql = sql.substitute(field=update_value, id=id)
         useDB.useDB().insert(sql)
-
