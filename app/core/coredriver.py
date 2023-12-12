@@ -43,6 +43,7 @@ class coredriver():
                     #     'extensions': []
                     # }
                     chrome_option.set_capability('browserVersion', '120.0')
+                    chrome_option.add_argument("--start-maximized")
                 desired_caps_web['goog:chromeOptions'] = chrome_option
             elif runType == 'Firefox':
                 desired_caps_web = webdriver.DesiredCapabilities.FIREFOX.copy()

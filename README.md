@@ -269,7 +269,7 @@ http://localhost/login/api/test.do?username=user1&password=123456&from=android
 ## 安装步骤：
 ### 1. clone 或下载代码包到本地解压:
 ```
-git clone https://github.com/jerrylizilong/autotest_platform.git
+git clone https://github.com/wangkun99996666/api_automation_test.git
 ```
 
 
@@ -316,7 +316,7 @@ python run.py
 ```
        
 此时可通过访问  localhost:5000  访问登录界面。
-初始用户及密码：  admin/0
+初始用户及密码：  wangkun/wangkun
 ### 2.1 启动 core service（selenium 的执行服务）：
 ```python
 python core.py

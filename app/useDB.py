@@ -54,7 +54,7 @@ class mysqlDB(object):
         import mysql.connector
         conn = mysql.connector.connect(host=config.db_host, port=config.db_port, user=config.db_user,
                                        password=config.db_password, database=config.database,
-                                       auth_plugin='mysql_native_password')
+                                       auth_plugin='mysql_native_password', charset='utf8')
         return conn
 
     def search(self, sql):
