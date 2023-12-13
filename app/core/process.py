@@ -18,6 +18,10 @@ class process():
 
     # run the case
     def main(self, case, deviceList=[]):
+        """
+        para: case: tuple like (21857, 'Chrome,前往|https://www.baidu.com,填写|id@@kw@@selenium,点击|id@@su,验证|selenium_百度搜索,截图', '')
+        para: deviceList: list
+        """
         result = 1
         id = case[0]
         test_batch_manage.test_batch_manage().set_test_running(id, deviceList)
@@ -31,11 +35,11 @@ class process():
         if len(newstep):
             runType = newstep[0][0]
             if len(newstep[0][1]) == 1:
-                if newstep[0][1][0] != '1':
+                if newstep[0][1][0] != '1':  # 获取手机中的报名
                     package = newstep[0][1][0]
             newstep.remove(newstep[0])
             case.remove(case[0])
-            if runType == 'Android' and isUseATX:
+            if runType == 'Android' and isUseATX:  # 手机操作
                 # 使用 atx 执行 Android 用例
                 result, stepN, screenFileList = atx_core.atx_core().run_case(id, package, newstep, case, screenFileList,
                                                                              deviceList=deviceList)
@@ -53,6 +57,15 @@ class process():
         return result
 
     def run_selenium(self, id, runType, package, newstep, case, screenFileList):
+        """
+        para:id: int
+        para:runType: str
+        para: package: str
+        para: newstep: list like [['前往', ['https://www.baidu.com']], ['填写', ['id', 'kw', 'selenium']], ['点击', ['id', 'su']], ['验证', ['selenium_百度搜索']], ['截图', ['1']]]
+        para: case: list like ['前往|https://www.baidu.com', '填写|id@@kw@@selenium', '点击|id@@su', '验证|selenium_百度搜索', '截图']
+        para: screenFileList: list
+        return: tuple
+        """
         # print(id,runType,package,newstep,case,screenFileList)
         result = '2'
         stepN = 'init'
@@ -103,6 +116,13 @@ class process():
 
     @retry(stop_max_attempt_number=3, wait_fixed=5000)
     def do_step(self, driver, steps, case, id, screenFileList):
+        """
+        para: driver: WebDriver
+        para: steps:list like ['前往', ['https://www.baidu.com']]
+        para: case: str like '前往|https://www.baidu.com'
+        para: id: int
+        para: screenFileList: list
+        """
         keyword = steps[0]
         stepN = keyword
         comed, element = buildCase.buildCase().build_case(keyword, steps[1])  # 转换为可执行语句
@@ -126,7 +146,7 @@ class process():
             stepN = 'no comed to run!'
         return result, stepN, screenFileList
 
-    # multiple run, for android , the tread is 1; for webdriver , the thread could by more than 1.
+    # multiple run, for android , the thread is 1; for webdriver , the thread could by more than 1.
     def multipleRun(self, caselist, threadNum):
         pool = ThreadPool(threadNum)
         pool.map(self.main, caselist)

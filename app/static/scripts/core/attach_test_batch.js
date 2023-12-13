@@ -1,60 +1,57 @@
-function getDevices(){
-      $.ajax(
-            {
-              url: "/getDevicesList.json",
-              data:{},
-              type: "get",
-              dataType:"json",
-              beforeSend:function()
-              {
+function getDevices() {
+    $.ajax(
+        {
+            url: "/getDevicesList.json",
+            data: {},
+            type: "get",
+            dataType: "json",
+            beforeSend: function () {
                 return true;
-              },
-              success:function(data)
-              {
+            },
+            success: function (data) {
 
-                  var ipList=data["msg"]
-                  $("#ipList").html("");
-                   var option_group='';
-                   var optionInit='<option value="">-请选择-</option>'
-                   for (var j=0;j<ipList.length;j++){
-                       var selectdata=ipList[j];
-                       var ip=ipList[j]["ip"]
-                       var model=ipList[j]["model"]
-                       var option='<option value="'+ip+'">'+model+'</option>';
-                       option_group+=option;
-                  }
-                  $("#ipList").append(optionInit);
-                  $("#ipList").append(option_group);
+                var ipList = data["msg"]
+                $("#ipList").html("");
+                var option_group = '';
+                var optionInit = '<option value="">-请选择-</option>'
+                for (var j = 0; j < ipList.length; j++) {
+                    var selectdata = ipList[j];
+                    var ip = ipList[j]["ip"]
+                    var model = ipList[j]["model"]
+                    var option = '<option value="' + ip + '">' + model + '</option>';
+                    option_group += option;
+                }
+                $("#ipList").append(optionInit);
+                $("#ipList").append(option_group);
 
-              },
-              error:function()
-              {
+            },
+            error: function () {
                 alert('请求出错');
-              },
-              complete:function()
-              {
+            },
+            complete: function () {
                 // $('#tips').hide();
-              }
-            });
+            }
+        });
 }
 
 // submit form
 function submitAddForm() {
-   $("#new_test_case").validate();
-   $.validator.setDefaults({
-        submitHandler: function() {
+    $("#new_test_case").validate();
+    $.validator.setDefaults({
+        submitHandler: function () {
             document.getElementById("new_test_case").submit();
-    }
-});
-   }
+        }
+    });
+}
 
-function initPage(test_suite_id){
+function initPage(test_suite_id) {
     var oTable = new TableInit(test_suite_id);
     oTable.Init(test_suite_id);
     get_edit_info(test_suite_id);
 
 
 }
+
 //
 //function iniImage(lenth, i, pro){
 //if (lenth>1){
@@ -64,7 +61,6 @@ function initPage(test_suite_id){
 //alert("only one page!");
 //}
 //}
-
 
 
 var TableInit = function (test_suite_id) {
@@ -82,9 +78,9 @@ var TableInit = function (test_suite_id) {
             sortOrder: "asc",                   //排序方式
             queryParams: oTableInit.queryParams,//传递参数（*）
             sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber:1,                       //初始化加载第一页，默认第一页
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
             pageSize: 10,                       //每页的记录行数（*）
-            pageList: [10, 25, 50, 100,500],        //可供选择的每页的行数（*）
+            pageList: [10, 25, 50, 100, 500],        //可供选择的每页的行数（*）
             search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
             strictSearch: false,
             showColumns: true,                  //是否显示所有的列
@@ -93,7 +89,7 @@ var TableInit = function (test_suite_id) {
             clickToSelect: true,                //是否启用点击选中行
             height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
             uniqueId: "id",                     //每一行的唯一标识，一般为主键列
-            showToggle:true,                    //是否显示详细视图和列表视图的切换按钮
+            showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
             cardView: false,                    //是否显示详细视图
             detailView: false,                   //是否显示父子表
             columns: [{
@@ -101,10 +97,10 @@ var TableInit = function (test_suite_id) {
             }, {
                 field: 'id',
                 title: 'id'
-            },{
+            }, {
                 field: 'module',
                 title: '模块'
-            },{
+            }, {
                 field: 'name',
                 title: '名称'
             }, {
@@ -114,17 +110,17 @@ var TableInit = function (test_suite_id) {
                 field: 'description',
                 title: '描述'
             }
-                ]
+            ]
         });
     };
     //得到查询的参数
     oTableInit.queryParams = function (params) {
-             var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
             id: test_suite_id,
-            module : get_multiple_select_value( "module"),
-            name : $('#casename1').val(),
+            module: get_multiple_select_value("module"),
+            name: $('#casename1').val(),
             type: 'unattach'
         };
         return temp;
@@ -162,74 +158,66 @@ var TableInit = function (test_suite_id) {
 //}
 
 
+// 编辑表单
+function get_edit_info(active_id) {
 
- // 编辑表单
-function get_edit_info(active_id)
-  {
-
-    if(!active_id)
-    {
-      alert('Error！');
-      return false;
+    if (!active_id) {
+        alert('Error！');
+        return false;
     }
 
     $.ajax(
         {
-          url: "test_suite.json",
-          data:{"id":active_id},
-          type: "get",
-          dataType:"json",
-          beforeSend:function()
-          {
-            return true;
-          },
-          success:function(data)
-          {
-            if(data)
-            {
-              // 解析json数据
-              var data = data;
-              var data_obj = data.rows
+            url: "test_suite.json",
+            data: {"id": active_id},
+            type: "get",
+            dataType: "json",
+            beforeSend: function () {
+                return true;
+            },
+            success: function (data) {
+                if (data) {
+                    // 解析json数据
+                    var data = data;
+                    var data_obj = data.rows
 
-              // 赋值
-              $("#id").val(active_id);
-              $("#name").val(data_obj.name);
-              $("#run_type").val(data_obj.run_type);
-              $("#description").val(data_obj.description);
-              if (data_obj.run_type=='Android'){
-                  getDevices();
-              }else{
-                   $("#ipList").hide();
+                    // 赋值
+                    $("#id").val(active_id);
+                    $("#name").val(data_obj.name);
+                    $("#run_type").val(data_obj.run_type);
+                    $("#description").val(data_obj.description);
+                    if (data_obj.run_type == 'Android') {
+                        getDevices();
+                    } else {
+                        $("#ipList").hide();
 //                   $("#btn_runIp_test").hide();
-                   $("#ipListLabel").hide();
+                        $("#ipListLabel").hide();
 
-              }
+                    }
 
+                } else {
+                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
+                    // alert('操作失败');
+                }
+            },
+            error: function () {
+                alert('请求出错');
+            },
+            complete: function () {
+                // $('#tips').hide();
             }
-
-            else
-            {
-              $("#tip").html("<span style='color:red'>失败，请重试</span>");
-             // alert('操作失败');
-            }
-          },
-          error:function()
-          {
-            alert('请求出错');
-          },
-          complete:function()
-          {
-            // $('#tips').hide();
-          }
         });
 
     return false;
-  }
+}
 
 
-function searchTestBatch1(test_suite_id){
+function searchTestBatch1(test_suite_id) {
     var $tb_departments = $('#tb_test_batch1');
-    $tb_departments.bootstrapTable('refresh', {url: '/test_case.json',data:{id: test_suite_id,status : $("#selectStatus1").val(), name : $('#casename1').val(),type:'unattach'}});
+    $tb_departments.bootstrapTable('refresh', {
+        url: '/test_case.json',
+        data: {id: test_suite_id, status: $("#selectStatus1").val(), name: $('#casename1').val(), type: 'unattach'}
+    });
 }
 
 //
@@ -239,64 +227,60 @@ function searchTestBatch1(test_suite_id){
 ////alert(value);
 //}
 
-function attachTestCase(test_suite_id){
-   var  ipVal=get_multiple_select_value("ipList");
-   var browser_list=get_multiple_select_value("browserList");
+function attachTestCase(test_suite_id) {
+    var ipVal = get_multiple_select_value("ipList");
+    var browser_list = get_multiple_select_value("browserList");
     var $tb_departments = $('#tb_test_batch1');
-    var a= $tb_departments.bootstrapTable('getSelections');
+    var a = $tb_departments.bootstrapTable('getSelections');
     var datarow = '';
-    for(var i=0;i<a.length;i++){
+    for (var i = 0; i < a.length; i++) {
 //        alert(a[i].id);
-        datarow = datarow+','+a[i].id;
-        }
+        datarow = datarow + ',' + a[i].id;
+    }
 //    alert(test_suite_id);
 //    alert(datarow);
-    if(a.length>0){
-         $.ajax(
-        {
-          url: "/attach_test_batch.json",
-          data:{"test_suite_id":test_suite_id,"ipVal":ipVal,"browser_list":browser_list,"datarow":datarow},
-          type: "get",
-          dataType:"json",
-          beforeSend:function()
-          {
-            return true;
-          },
-          success:function(data)
-          {
-            if(data)
+    if (a.length > 0) {
+        $.ajax(
             {
-              // 解析json数据
-              var data = data;
-              if(data.code==200){
-              alert('success!');
-              document.location.reload();
-              }else{
-              alert('code is :'+data.code+' and message is :'+data.msg);
-              }
+                url: "/attach_test_batch.json",
+                data: {
+                    "test_suite_id": test_suite_id,
+                    "ipVal": ipVal,
+                    "browser_list": browser_list,
+                    "datarow": datarow
+                },
+                type: "get",
+                dataType: "json",
+                beforeSend: function () {
+                    return true;
+                },
+                success: function (data) {
+                    if (data) {
+                        // 解析json数据
+                        var data = data;
+                        if (data.code == 200) {
+                            alert('success!');
+                            document.location.reload();
+                        } else {
+                            alert('code is :' + data.code + ' and message is :' + data.msg);
+                        }
 
 
-
-            }
-
-            else
-            {
-              $("#tip").html("<span style='color:red'>失败，请重试</span>");
-             // alert('操作失败');
-            }
-          },
-          error:function()
-          {
-            alert('请求出错');
-          },
-          complete:function()
-          {
-            // $('#tips').hide();
-          }
-   });
-}else{
-   alert('no row is selected!');
-   }
+                    } else {
+                        $("#tip").html("<span style='color:red'>失败，请重试</span>");
+                        // alert('操作失败');
+                    }
+                },
+                error: function () {
+                    alert('请求出错');
+                },
+                complete: function () {
+                    // $('#tips').hide();
+                }
+            });
+    } else {
+        alert('no row is selected!');
+    }
 }
 
 

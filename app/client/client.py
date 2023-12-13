@@ -7,7 +7,7 @@ port0 = '4444'
 
 
 def connectDevcie():
-    '''''检查设备是否连接成功，如果成功返回True，否则返回False'''
+    """检查设备是否连接成功，如果成功返回True，否则返回False"""
     try:
         '''''获取设备列表信息，并用"\r\n"拆分'''
         deviceInfo = str(subprocess.check_output('adb devices')).split("\\r\\n")
@@ -48,7 +48,7 @@ def newHub(isOpen):
         s.send(data)
         print(s.recv(1024).decode('utf-8'))
         if not isOpen:
-            os.system('java -jar "selenium-server-standalone-3.11.0.jar" -port %s' % port0)
+            os.system('java -jar "selenium-server-4.16.0.jar" -port %s' % port0)
     except:
         print('host is not avaiable')
 

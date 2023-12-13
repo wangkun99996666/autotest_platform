@@ -34,6 +34,10 @@ class keywords(object):
             return '', ''
 
     def getPara(self, keyword):
+        """
+        para: keyword: str like '前往'
+        return: (paraCount: int, template(methodName): str, elementTemplate:??
+        """
         result = 0
         # log.log().logger.info(keyword)
         sql = string.Template(

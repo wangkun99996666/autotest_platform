@@ -16,13 +16,20 @@ class buildCase(object):
         return newValue
 
     def convertToComend(self, template, paraCount, paraValue, elementTemplate):
-        # log.log().logger.info(template, paraCount, paraValue,elementTemplate)
+        """
+        para: paraCount: int
+        para: elementTemplate: method for WebElement
+        para: paraValue: list like ['https://www.baidu.com']
+        para: template: str like 'driver.get("$para1")'
+        return: 转换成driver or webDriver方法
+        """
+        # log.log().logger.info(template, paraCount, paraValue,elementTezmplate)
         for i in range(len(paraValue)):
             paraValue[i] = paraValue[i].replace('"', '\'')
             paraValue[i] = paraValue[i].replace('comma', ',')
         # log.log().logger.info(paraValue)
         template = string.Template(template)
-        if elementTemplate != '' and elementTemplate != None:
+        if elementTemplate != '' and elementTemplate is not None:
             elementTemplate = string.Template(elementTemplate)
         else:
             elementTemplate = ''
@@ -78,6 +85,10 @@ class buildCase(object):
             return '', ''
 
     def build_case(self, keyword, steps):
+        """
+        para: keyword: str like '前往'
+        para: steps: list like ['https://www.baidu.com']
+        """
         paraCount, template, elementTemplate = keywords.keywords().getPara(keyword)
         if paraCount == '':
             return '', ''
@@ -135,6 +146,9 @@ class buildCase(object):
         return url[0][0]
 
     def getCase(self, case):
+        """
+        para: case: str like 'Chrome,前往|https://www.baidu.com,填写|id@@kw@@selenium,点击|id@@su,验证|selenium_百度搜索,截图'
+        """
         case = case.split(',')
         if '' in case:
             case.remove('')

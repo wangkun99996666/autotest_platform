@@ -1,4 +1,4 @@
-def getInfoAttribute(info,field):
+def getInfoAttribute(info, field):
     try:
         value = info.get(field)
     except:

@@ -1,4 +1,3 @@
-
 $(function () {
     //2.初始化Button的点击事件
     var oButtonInit = new ButtonInit();

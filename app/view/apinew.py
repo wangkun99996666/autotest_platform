@@ -1,21 +1,22 @@
-from flask import Blueprint,render_template, jsonify, request,redirect
+from flask import Blueprint, render_template, jsonify, request, redirect
 from app import log
-from app.view import viewutil,user
+from app.view import viewutil, user
 from app.api_new import api_manage
 from app.db import test_api_new_manange
 
 mod = Blueprint('apinew', __name__,
-                        template_folder='templates')
+                template_folder='templates')
 
 
 #########################api自动化功能开发开始###############################################
-#api功能主页
+# api功能主页
 @mod.route('/test_api_new')
 @user.authorize
 def test_api():
     return render_template("apinew/test_api_new.html")
 
-#api查询
+
+# api查询
 @mod.route('/test_api_new.json', methods=['POST', 'GET'])
 @user.authorize
 def search_test_api():
@@ -23,28 +24,31 @@ def search_test_api():
         log.log().logger.info('post')
     if request.method == 'GET':
         info = request.values
-        log.log().logger.info('info : %s' %info)
+        log.log().logger.info('info : %s' % info)
         limit = info.get('limit', 10)  # 每页显示的条数
         offset = info.get('offset', 0)  # 分片数，(页码-1)*limit，它表示一段数据的起点
-        log.log().logger.info('get %s' %limit)
-        log.log().logger.info('get  offset %s' %offset)
+        log.log().logger.info('get %s' % limit)
+        log.log().logger.info('get  offset %s' % offset)
 
         type = viewutil.getInfoAttribute(info, 'type')
         id = viewutil.getInfoAttribute(info, 'id')
         name = viewutil.getInfoAttribute(info, 'name')
         product = viewutil.getInfoAttribute(info, 'product')
         module = viewutil.getInfoAttribute(info, 'module')
-        conditionList = ['id','name','product','module']
-        valueList = [id,name,product,module]
+        conditionList = ['id', 'name', 'product', 'module']
+        valueList = [id, name, product, module]
         fieldlist = []
         rows = 1000
-        caseList = test_api_new_manange.test_api_new_manange().show_test_api(conditionList, valueList, fieldlist, rows,type=type)
+        caseList = test_api_new_manange.test_api_new_manange().show_test_api(conditionList, valueList, fieldlist, rows,
+                                                                             type=type)
         log.log().logger.info(caseList)
         data = caseList
         data1 = jsonify({'total': len(data), 'rows': data[int(offset):int(offset) + int(limit)]})
-        log.log().logger.info('data1: %s' %data1)
+        log.log().logger.info('data1: %s' % data1)
         return data1, {'Content-Type': 'application/json'}
-#api新增界面入口与新增成功跳转
+
+
+# api新增界面入口与新增成功跳转
 @mod.route('/add_test_api_new', methods=['GET'])
 @user.authorize
 def new_test_api():
@@ -53,14 +57,15 @@ def new_test_api():
         log.log().logger.info('post')
         return render_template("apinew/new_test_api.html")
 
-#api新增界面入口与新增成功跳转
+
+# api新增界面入口与新增成功跳转
 @mod.route('/add_test_api_new.json', methods=['POST'])
 @user.authorize
 def save_new_test_api():
     log.log().logger.info(request)
     if request.method == 'POST':
         info = request.form
-        log.log().logger.info('info :  %s' %info)
+        log.log().logger.info('info :  %s' % info)
         name = viewutil.getInfoAttribute(info, 'name')
         description = viewutil.getInfoAttribute(info, 'description')
         module = viewutil.getInfoAttribute(info, 'module')
@@ -68,8 +73,9 @@ def save_new_test_api():
         url = viewutil.getInfoAttribute(info, 'url')
         paras = viewutil.getInfoAttribute(info, 'paras')
         osign_list = viewutil.getInfoAttribute(info, 'osign_list')
-        osign_list=osign_list.replace('[','').replace(']','').replace("'",'').replace(" ",'')
-        result = test_api_new_manange.test_api_new_manange().new_test_api(product,module,name,url,paras,osign_list,description)
+        osign_list = osign_list.replace('[', '').replace(']', '').replace("'", '').replace(" ", '')
+        result = test_api_new_manange.test_api_new_manange().new_test_api(product, module, name, url, paras, osign_list,
+                                                                          description)
         if result:
             code = 200
             message = 'success'
@@ -96,7 +102,8 @@ def split_test_api_url():
         log.log().logger.info('data1: %s' % data1)
         return data1, {'Content-Type': 'application/json'}
 
-#api删除s
+
+# api删除s
 @mod.route('/delete_test_api_new', methods=['POST', 'GET'])
 @user.authorize
 def delete_test_api():
@@ -104,13 +111,13 @@ def delete_test_api():
     if request.method == 'GET':
         log.log().logger.info('post')
         info = request.values
-        log.log().logger.info('info :  %s' %info)
+        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
-        log.log().logger.info('id: %s' %id)
+        log.log().logger.info('id: %s' % id)
         return render_template("apinew/test_api_new.html")
     if request.method == 'POST':
         info = request.form
-        log.log().logger.info('info :  %s' %info)
+        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
         result = test_api_new_manange.test_api_new_manange().del_test_api(id)
         if result:
@@ -121,7 +128,9 @@ def delete_test_api():
             message = 'please try again!'
         result = jsonify({'code': code, 'msg': message})
         return result, {'Content-Type': 'application/json'}
-#api修改页面入口
+
+
+# api修改页面入口
 @mod.route('/edit_test_api_new', methods=['POST', 'GET'])
 @user.authorize
 def edit_test_api():
@@ -129,19 +138,20 @@ def edit_test_api():
     if request.method == 'GET':
         log.log().logger.info('post')
         info = request.values
-        log.log().logger.info('info :  %s' %info)
+        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
-        log.log().logger.info('id: %s' %id)
+        log.log().logger.info('id: %s' % id)
         return render_template("apinew/edit_test_api.html", id=id)
 
-#api 修改保存
+
+# api 修改保存
 @mod.route('/update_test_api_new.json', methods=['POST'])
 @user.authorize
 def update_test_api_new():
     log.log().logger.info(request)
     if request.method == 'POST':
         info = request.form
-        log.log().logger.info('info :  %s' %info)
+        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
         name = viewutil.getInfoAttribute(info, 'name')
         description = viewutil.getInfoAttribute(info, 'description')
@@ -150,14 +160,18 @@ def update_test_api_new():
         url = viewutil.getInfoAttribute(info, 'url')
         paras = viewutil.getInfoAttribute(info, 'paras')
         osign_list = viewutil.getInfoAttribute(info, 'osign_list')
-        result = test_api_new_manange.test_api_new_manange().update_test_api(id,fieldlist=['product','module','name','url','paras','osign_list','description'] ,valueList=[product,module,name,url,paras,osign_list,description])
+        result = test_api_new_manange.test_api_new_manange().update_test_api(id, fieldlist=['product', 'module', 'name',
+                                                                                            'url', 'paras',
+                                                                                            'osign_list',
+                                                                                            'description'],
+                                                                             valueList=[product, module, name, url,
+                                                                                        paras, osign_list, description])
         if result:
-            data1 = jsonify({'code':200})
+            data1 = jsonify({'code': 200})
         else:
-            data1 = jsonify({'code':500})
+            data1 = jsonify({'code': 500})
         log.log().logger.info('data1: %s' % data1)
         return data1, {'Content-Type': 'application/json'}
-
 
 
 # 手工测试某个ｕｒｌ  页面
@@ -169,7 +183,8 @@ def test_api_single_test_page():
         log.log().logger.info(request.values)
         info = request.values
         id = viewutil.getInfoAttribute(info, 'id')
-        return render_template('apinew/test_api_case_new_run.html',id=id)
+        return render_template('apinew/test_api_case_new_run.html', id=id)
+
 
 # 手工测试某个ｕｒｌ
 @mod.route('/test_api_new_run.json', methods=['POST'])
@@ -189,7 +204,7 @@ def test_api_single_test():
         return result
 
 
-#重算签名
+# 重算签名
 @mod.route('/test_api_reosign_new.json', methods=['POST', 'GET'])
 @user.authorize
 def test_api_reosign():
@@ -202,19 +217,19 @@ def test_api_reosign():
         log.log().logger.info(request.values)
         info = request.values
         osign_list = viewutil.getInfoAttribute(info, 'osign_list').split(',')
-        context=viewutil.getInfoAttribute(info, 'context')
+        context = viewutil.getInfoAttribute(info, 'context')
         import json
         context = json.loads(context)
         # print(type(context))
         # print(context['appId'])
-          # print(osign,context)
-        log.log().logger.info('context is : %s' %context)
-        print(len(osign_list),osign_list,'osign info')
-        if len(osign_list)>1:
+        # print(osign,context)
+        log.log().logger.info('context is : %s' % context)
+        print(len(osign_list), osign_list, 'osign info')
+        if len(osign_list) > 1:
             log.log().logger.info('osign is not empty!')
             from app.api_new import api_manage
-            appKey='abc'
-            context= api_manage.api_manage().api_osign(osign_list=osign_list,para_info=context,appkey=appKey)
+            appKey = 'abc'
+            context = api_manage.api_manage().api_osign(osign_list=osign_list, para_info=context, appkey=appKey)
             log.log().logger.info(context['osign'])
             result = jsonify({'code': 200, 'rows': [{'context': str(context)}]})
         else:
@@ -223,21 +238,19 @@ def test_api_reosign():
         return result
 
 
-
-#api查询url
+# api查询url
 @mod.route('/test_api_host.json', methods=['GET'])
 @user.authorize
 def search_test_api_host_manage():
     if request.method == 'GET':
         info = request.values
-        log.log().logger.info('info : %s' %info)
+        log.log().logger.info('info : %s' % info)
         type = viewutil.getInfoAttribute(info, 'type')
         from app.api_new import paras
         hostList = paras.paraValues().Hosts
         data1 = jsonify({'total': len(hostList), 'rows': hostList})
-        log.log().logger.info('data1: %s' %data1)
+        log.log().logger.info('data1: %s' % data1)
         return data1, {'Content-Type': 'application/json'}
-
 
 # #########################api suit自动化功能开发开始###############################################
 # #api功能主页

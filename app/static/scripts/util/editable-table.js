@@ -1,6 +1,6 @@
 var EditableTable = function () {
 
-'use strict';
+    'use strict';
 
     return {
         init: function () {
@@ -44,6 +44,7 @@ var EditableTable = function () {
                 oTable.fnUpdate('<a class="edit" href="">Edit</a>', nRow, 4, false);
                 oTable.fnDraw();
             }
+
             var oTable = $('#editable-sample').dataTable({
                 "aLengthMenu": [
                     [5, 15, 20, -1],

@@ -8,6 +8,9 @@ import http
 class coredriver():
 
     def serverUrl(self, servers):
+        """
+        para: servers: list like [('0.0.0.0', '4444')]
+        """
         server_url = {}
         import random
         i = random.randint(0, 100) % len(servers)
@@ -19,6 +22,9 @@ class coredriver():
         # init the driver. if runType is Android, the package is required
 
     def iniDriver(self, runType, devicename=''):
+        """
+        para: runType: str
+        """
         log.log().logger.debug('RUNTYPE is : %s' % runType)
         servers = hubs.hubs().showHubs(runType)
         log.log().logger.debug(servers)
