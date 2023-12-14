@@ -58,6 +58,7 @@ function addUser() {
                 if (data.code == 200) {
                     alert('恭喜，新增成功！');
                     $("#tip").html("<span style='color:blueviolet'>恭喜，新增成功！</span>");
+                    window.location.href = ('/add_user');
 
 
                     window.location.href = ('/users');

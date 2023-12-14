@@ -24,23 +24,35 @@ class sqliteDB(object):
         log.log().logger.info(sql)
         conn = self.connect()
         cursor = conn.cursor()
-        cursor.execute(sql)
-        values = cursor.fetchall()
-        # log.log().logger.info('values:',values)
-        cursor.close()
-        conn.close()
+        try:
+            cursor.execute(sql)
+            values = cursor.fetchall()
+            cursor.close()
+            conn.close()
+        except:
+            log.log().logger.error('search error')
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         return values
 
     def insert(self, sql):
         conn = self.connect()
         cursor = conn.cursor()
-        cursor.execute(sql)
-        log.log().logger.info(sql)
-        cursor.close()
         try:
+            cursor.execute(sql)
+            log.log().logger.info(sql)
+            cursor.close()
             conn.commit()
         except:
             log.log().logger.info('commit error')
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         conn.close()
 
 
@@ -58,47 +70,75 @@ class mysqlDB(object):
         return conn
 
     def search(self, sql):
+        """
+        返回指定sql的全部查询结果
+        """
         conn = self.connect()
         cursor = conn.cursor()
-        # log.log().logger.info(sql)
-        cursor.execute(sql)
-        values = cursor.fetchall()
-        # log.log().logger.info('values1 :', values)
-        cursor.close()
-        conn.close()
+        try:
+            cursor.execute(sql)
+            values = cursor.fetchall()
+            cursor.close()
+            conn.close()
+        except:
+            log.log().logger.error('search error')
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
         return values
 
     def insert(self, sql):
+        """
+        增、删、改操作
+        """
         log.log().logger.debug(sql)
         conn = self.connect()
         cursor = conn.cursor()
-        cursor.execute(sql)
-        cursor.close()
         try:
+            cursor.execute(sql)
+            cursor.close()
             conn.commit()
         except:
             log.log().logger.error('commit error')
-        conn.close()
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+        return True
 
     def excutesql(self, sql):
         log.log().logger.debug(sql)
         conn = self.connect()
         cursor = conn.cursor()
-        cursor.execute(sql)
-        cursor.close()
         try:
+            cursor.execute(sql)
+            cursor.close()
             conn.commit()
         except:
             log.log().logger.error('commit error')
-        conn.close()
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
 
     # 测试查询，防止sql注入
     def searchsql(self, sql, args):
         conn = self.connect()
         cursor = conn.cursor()
-        cursor.execute(sql, args)
-        values = cursor.fetchall()
-        cursor.close()
+        try:
+            cursor.execute(sql, args)
+            values = cursor.fetchall()
+            cursor.close()
+        except:
+            log.log().logger.error('select error')
+        finally:
+            if cursor:
+                cursor.close()
         return values
 
 

@@ -30,6 +30,12 @@ class extend():
             method = By.PARTIAL_LINK_TEXT
         elif 'tag' in method:
             method = By.TAG_NAME
+        elif 'id' in method:
+            method = By.ID
+        elif 'xpath' in method:
+            method = By.XPATH
+        elif 'name' in method:
+            method = By.NAME
         elements = driver.find_elements(by=method, value=value)
         new_elements = []
         for element in elements:
@@ -75,12 +81,12 @@ class extend():
         """
         attribute_list = ['textContent', 'text', 'value', 'placeholder']
         for attribute in attribute_list:
-            result = self.get_element_attribute(element, attribute, text)
+            result = self.exsit_element_attribute(element, attribute, text)
             if result:
                 return True
         return False
 
-    def get_element_attribute(self, element, attribute, text):
+    def exsit_element_attribute(self, element, attribute, text):
         """
         Return whether element's given attribute contains the specified text.
 
@@ -104,7 +110,19 @@ class extend():
         method, value = para_list[0], para_list[1]
         if method == 'css':
             method = By.CSS_SELECTOR
-        driver.switch_to_frame(driver.find_element(by=method, value=value))
+        elif 'class' in method:
+            method = By.CLASS_NAME
+        elif 'text' in method:
+            method = By.PARTIAL_LINK_TEXT
+        elif 'tag' in method:
+            method = By.TAG_NAME
+        elif 'id' in method:
+            method = By.ID
+        elif 'xpath' in method:
+            method = By.XPATH
+        elif 'name' in method:
+            method = By.NAME
+        driver.switch_to.frame(driver.find_element(by=method, value=value))
         time.sleep(2)
 
     def switchWindow(self, driver):
@@ -149,7 +167,7 @@ class extend():
         :return:
         """
         elements = driver.find_elements(by='xpath', value="//*[contains(.,'" + text + "')]")
-        assert len(elements)
+        assert len(elements), "当前页面不包含指定的文本"
 
     def assert_title(self, driver, text):
         """
@@ -160,7 +178,7 @@ class extend():
         :return:
         """
         log.log().logger.info('目标文本：%s， 期待包含文本：%s' % (driver.title, text))
-        assert text in driver.title
+        assert text in driver.title, "当前页面不包含指定的标题"
 
     def assert_element_text(self, driver, para_list, isNot=False, isUpper=False):
         """
@@ -184,7 +202,7 @@ class extend():
                 text0 = element.get_attribute('value')
         if isNot:
             log.log().logger.info('目标文本：%s， 期待不包含文本：%s' % (text0, text))
-            assert (text in str(text0)) == False
+            assert (text in str(text0)) is False
         else:
             log.log().logger.info('目标文本：%s， 期待包含文本：%s' % (text0, text))
             assert (text in str(text0))
