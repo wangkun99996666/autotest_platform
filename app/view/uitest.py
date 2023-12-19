@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, jsonify, request, redirect
 from app import log
 from app.view import viewutil, user
 from app.db import test_case_manage, test_batch_manage, test_suite_manage, test_keyword_manage
-import pyecharts
+from pyecharts import options as opts
+from pyecharts.charts import Pie
 
 mod = Blueprint('uitest', __name__,
                 template_folder='templates/uitest')
@@ -269,7 +270,7 @@ def search_test_suite():
         return data1, {'Content-Type': 'application/json'}
 
 
-@mod.route('/add_test_suite.json', methods=['POST', 'GET'])
+@mod.route('/add_test_suite.json', methods=['POST'])
 @user.authorize
 def save_new_test_suite():
     log.log().logger.info(request)
@@ -806,9 +807,9 @@ def delete_test_keyword():
 @user.authorize
 def test_case_runhistory_report2():
     REMOTE_HOST = "https://pyecharts.github.io/assets/js"
-    bar = pyecharts.Pie()
-    bar.add("Sports", ["Football", "Basketball", "Baseball", "Tennis", "Swimming"], [23, 34, 45, 56, 67],
-            is_more_utils=True)
+    # bar = pyecharts.Pie()
+    # bar.add("Sports", ["Football", "Basketball", "Baseball", "Tennis", "Swimming"], [23, 34, 45, 56, 67],
+    #         is_more_utils=True)
 
     log.log().logger.info(request)
     if request.method == 'GET':
@@ -818,8 +819,9 @@ def test_case_runhistory_report2():
         id = viewutil.getInfoAttribute(info, 'id')
         log.log().logger.info('id: %s' % id)
         if len(test_case_manage.test_case_manage().show_test_cases(['id'], [id], [], 2)) == 1:
-            return render_template("uitest/test_batch_result.html", id=id, type='test_case', test_suite_id='',
-                                   myechart=bar.render_embed(), host=REMOTE_HOST, script_list=bar.get_js_dependencies())
+            # return render_template("uitest/test_batch_result.html", id=id, type='test_case', test_suite_id='',
+            #                        myechart=bar.render_embed(), host=REMOTE_HOST, script_list=bar.get_js_dependencies())
+            return render_template("uitest/test_batch_result.html", id=id, type='test_case', test_suite_id='')
         else:
             return render_template("uitest/test_cases.html")
     else:
@@ -830,7 +832,7 @@ def test_case_runhistory_report2():
 @user.authorize
 def test_batch_detail_report():
     REMOTE_HOST = "https://pyecharts.github.io/assets/js"
-    bar = pyecharts.Pie()
+    bar = Pie
     bar.width = 700
     bar.height = 400
     log.log().logger.info(request)
@@ -841,12 +843,27 @@ def test_batch_detail_report():
         id = viewutil.getInfoAttribute(info, 'test_suite_id')
         log.log().logger.info('id: %s' % id)
         statusList = test_batch_manage.test_batch_manage().show_test_batch_status(id)
-        nameList, valueList = bar.cast(statusList)
-        bar.add("results", ['失败', '待执行', '执行中', '成功'], valueList[0:4],
-                is_more_utils=True, is_area_show=True, is_label_show=True, legend_pos="50%")
-        return render_template("uitest/test_batch_detail_report.html", id=id,
-                               myechart=bar.render_embed(), host=REMOTE_HOST, script_list=bar.get_js_dependencies())
-        # return render_template("uitest/test_batch_report.html", id=id)
+        # nameList, valueList = bar.cast(statusList)
+        # nameList, valueList = cast(statusList)
+        # bar.add("results", ['失败', '待执行', '执行中', '成功'], valueList[0:4],
+        #         is_more_utils=True, is_area_show=True, is_label_show=True, legend_pos="50%")
+        # 准备数据
+        # data = [("A", 25), ("B", 45), ("C", 30)]
+
+        # 创建饼图
+        # pie = (
+        #     Pie()
+        #         .add("", data)
+        #         .set_global_opts(title_opts=opts.TitleOpts(title="饼图示例"))
+        #         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+        # )
+
+        # 保存为 HTML 文件
+        # pie.render("pie_chart.html")
+
+        # return render_template("uitest/test_batch_detail_report.html", id=id,
+        #                        myechart=bar.render_embed(), host=REMOTE_HOST, script_list=bar.js_dependencies)
+        return render_template('uitest/test_batch_detail_report.html', id=id)
     else:
         return render_template('test_suite.html')
 
@@ -891,3 +908,7 @@ def test_keywords_options():
         data1 = jsonify({'total': len(data), 'rows': data})
         log.log().logger.info('data1: %s' % data1)
         return data1, {'Content-Type': 'application/json'}
+
+
+def cast(statusList):
+    return list(statusList.keys()), list(statusList.values())

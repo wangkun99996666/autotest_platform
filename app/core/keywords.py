@@ -36,7 +36,7 @@ class keywords(object):
     def getPara(self, keyword):
         """
         para: keyword: str like '前往'
-        return: (paraCount: int, template(methodName): str, elementTemplate:??
+        return: (paraCount: int, template(methodName): str, elementTemplate:method for webElement): tuple
         """
         result = 0
         # log.log().logger.info(keyword)

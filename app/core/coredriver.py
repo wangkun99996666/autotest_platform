@@ -23,7 +23,9 @@ class coredriver():
 
     def iniDriver(self, runType, devicename=''):
         """
-        para: runType: str
+        para: runType: str like Chrome Firefox
+        para: devicename: extendFiled
+        return driver: webDriver or 0
         """
         log.log().logger.debug('RUNTYPE is : %s' % runType)
         servers = hubs.hubs().showHubs(runType)

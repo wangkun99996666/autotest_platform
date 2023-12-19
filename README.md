@@ -27,8 +27,8 @@ UI 自动化执行效果：
 
 ## 版本要求：
 - python 3.4 以上
-- selenium ： 建议使用 3.0 以上版本
-- mysql : 建议 5.5 以上
+- selenium ： 4.0以上版本
+- mysql : 建议 8.0 以上
 
 ## 使用说明：
 
@@ -335,7 +335,7 @@ selenium 最终接入的效果是提供可执行的selenium 环境供系统执�
 ![example3](doc/3.png "example3")
 
 可以按以下两种方式进行接入：
-#### 3.1 selenium server接入：
+#### 3.1 selenium server接入：暂不可用
 - 服务端启动：
  ```
  python run_service.py

@@ -247,20 +247,6 @@ function delete_test_suite(active_id) {
 
 // 提交表单
 function add_test_suite() {
-
-//    var $form = $("#new_test_suite");
-//
-//    var data = $form.data('bootstrapValidator');
-//    if (data) {
-//    // 修复记忆的组件不验证
-//        data.validate();
-//
-//        if (!data.isValid()) {
-//            return false;
-//        }
-//    }
-
-    // 异步提交数据到action/add_action.php页面
     $.ajax(
         {
             url: "/add_test_suite.json",
