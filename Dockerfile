@@ -6,5 +6,5 @@ COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN chmod +x run.sh
-
-CMD ["run.sh"]
+EXPOSE 5000
+CMD ["/usr/src/autotest_platform/run.sh"]

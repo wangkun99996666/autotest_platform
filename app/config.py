@@ -1,6 +1,6 @@
 # 数据库配置
 DBtype = '2'  # '1' : sqlite,  2: mysql
-db_host = '0.0.0.0'
+db_host = '0.0.0.0'  # 生产环境注意修改此IP
 db_port = '3306'
 db_user = 'root'
 db_password = 'root'

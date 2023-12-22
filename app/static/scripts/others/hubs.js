@@ -26,7 +26,7 @@ function addHub() {
             success: function (data) {
                 if (data.code == 200) {
                     alert('恭喜，成功！');
-                    $("#tip").html("<span style='color:blueviolet'>恭喜，新增成功！</span>");
+                    // $("#tip").html("<span style='color:blueviolet'>恭喜，新增成功！</span>");
                     window.location.href = ('/testhubs');
                 } else {
                     $("#tip").html("<span style='color:red'>失败，请重试</span>");
@@ -92,9 +92,9 @@ var TableInit = function () {
                     formatter: function (value, row, index) {
                         //通过判断单元格的值，来格式化单元格，返回的值即为格式化后包含的元素
                         var b = "";
-                        if (value == "1") {
+                        if (value === "1") {
                             var b = '<span style="color:#00ff00">开启</span>';
-                        } else if (value == "0") {
+                        } else if (value === "0") {
                             var b = '<span style="color:#FF0000">关闭</span>';
                         } else {
                             var b = '<span>' + value + '</span>';
