@@ -120,10 +120,9 @@
                             <button id="btn_attach" type="button" class="btn btn-default"
                                     onclick="window.location.href=('/attach_test_batch?test_suite_id={{ id }}')">关联用例
                             </button>
-                            <button id="btn_back" type="button" class="btn btn-default"
-                                    onclick="window.location.href='/test_suites'">返回
+                            <button id="btn_runIp_test" type="button" class="btn btn-default"
+                                    onclick="run_test_case_all_Ip({{ id }})">指定设备重跑
                             </button>
-                            {#                            <button id="btn_runIp_test" type="button" class="btn btn-default" onclick="run_test_case_all_Ip({{id}})">指定设备重跑</button>#}
                         </div>
                     </div>
                 </form>

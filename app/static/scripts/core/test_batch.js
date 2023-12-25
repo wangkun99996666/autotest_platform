@@ -10,14 +10,14 @@ function getDevices() {
             },
             success: function (data) {
 
-                var ipList = data["msg"]
+                var ipList = data["msg"];
                 $("#ipList").html("");
                 var option_group = '';
-                var optionInit = '<option value="">-请选择-</option>'
+                var optionInit = '<option value="">-请选择-</option>';
                 for (var j = 0; j < ipList.length; j++) {
                     var selectdata = ipList[j];
-                    var ip = ipList[j]["ip"]
-                    var model = ipList[j]["model"]
+                    var ip = ipList[j]["ip"];
+                    var model = ipList[j]["model"];
                     var option = '<option value="' + ip + '">' + model + '</option>';
                     option_group += option;
                 }
@@ -119,11 +119,10 @@ var TableInit = function (test_suite_id) {
             }, {
                 field: 'browser_type',
                 title: '浏览器类型'
+            }, {
+                field: 'ip',
+                title: '执行IP'
             }
-                , {
-                    field: 'ip',
-                    title: '执行IP'
-                }
                 , {
                     field: 'runtime',
                     title: '执行时间'
@@ -212,9 +211,9 @@ function get_edit_info(active_id) {
                     if (data_obj.run_type == 'Android') {
                         getDevices();
                     } else {
-                        $("#ipList").hide();
-                        $("#btn_runIp_test").hide();
-                        $("#ipListLabel").hide();
+                        $("#ipList").hide();  // ip列表框
+                        $("#btn_runIp_test").hide(); // 指定设备重跑按钮
+                        $("#ipListLabel").hide();  // ip列表框label
 
                     }
                 } else {
@@ -236,7 +235,7 @@ function get_edit_info(active_id) {
 
 function searchTestBatch(test_suite_id) {
     var $tb_departments = $('#tb_test_batch');
-    var ipVal = get_multiple_select_value("ipList")
+    var ipVal = get_multiple_select_value("ipList");
     $tb_departments.bootstrapTable('refresh', {
         url: '/test_batch.json',
         query: {
