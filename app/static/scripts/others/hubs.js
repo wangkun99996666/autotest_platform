@@ -11,6 +11,30 @@ $(function () {
 });
 
 
+//  删除变量与删除函数一起使用，无其它用途
+var delValue;
+var delRow;
+var delIndex;
+
+function delhub(value, row, index) {
+    // 节点管理中，删除节点使用
+    $.ajax({
+        url: '/deleteHub?id=' + row.id,
+        method: 'GET',
+        dataType: 'json', // 期望的服务器响应数据类型
+        success: function (response) {
+            // 请求成功时的处理逻辑
+            window.alert('删除节点成功');
+            window.location.href = '/testhubs';
+        },
+        error: function (error) {
+            // 请求失败时的处理逻辑
+            window.alert('删除节点出错');
+        }
+    });
+
+}
+
 // submit form
 function addHub() {
     $("#new_hub").validate();
@@ -92,9 +116,9 @@ var TableInit = function () {
                     formatter: function (value, row, index) {
                         //通过判断单元格的值，来格式化单元格，返回的值即为格式化后包含的元素
                         var b = "";
-                        if (value === "1") {
+                        if (value == "1") {
                             var b = '<span style="color:#00ff00">开启</span>';
-                        } else if (value === "0") {
+                        } else if (value == "0") {
                             var b = '<span style="color:#FF0000">关闭</span>';
                         } else {
                             var b = '<span>' + value + '</span>';
@@ -107,8 +131,12 @@ var TableInit = function () {
                     title: '操作',
                     align: 'center',
                     formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="window.location.href=(\'/edit_hub?id=' + row.id + '\')">编辑</a> ';
-                        return a;
+                        delValue = value;
+                        delRow = row;
+                        delIndex = index
+                        var edit = '<a href="javascript:;" onclick="window.location.href=(\'/edit_hub?id=' + row.id + '\')">编辑</a> ';
+                        var del = '<a href="javascript:;" onclick="delhub(delValue, delRow, delIndex)">删除</a>';
+                        return [edit, del].join('');
                     }
                 }
             ]

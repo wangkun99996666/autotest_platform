@@ -253,7 +253,7 @@ function run_test_case(test_case_id) {
                     var data = data;
                     if (data.code == 200) {
                         alert('success!');
-                        window.location.href = ('/test_case_runhistory?id=' + test_case_id)
+                        window.location.href = ('/test_case_runhistory?id=' + test_case_id);
                     } else {
                         alert('code is :' + data.code + ' and message is :' + data.msg);
                     }

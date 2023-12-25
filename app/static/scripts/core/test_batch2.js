@@ -10,14 +10,14 @@ function getDevices() {
             },
             success: function (data) {
 
-                var ipList = data["msg"]
+                var ipList = data["msg"];
                 $("#ipList").html("");
                 var option_group = '';
-                var optionInit = '<option value="">-请选择-</option>'
+                var optionInit = '<option value="">-请选择-</option>';
                 for (var j = 0; j < ipList.length; j++) {
                     var selectdata = ipList[j];
-                    var ip = ipList[j]["ip"]
-                    var model = ipList[j]["model"]
+                    var ip = ipList[j]["ip"];
+                    var model = ipList[j]["model"];
                     var option = '<option value="' + ip + '">' + model + '</option>';
                     option_group += option;
                 }
@@ -26,7 +26,7 @@ function getDevices() {
 
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
             complete: function () {
                 // $('#tips').hide();
@@ -53,7 +53,7 @@ function getDevices() {
 //指定设备
 function run_test_case_Ip(test_case_id) {
     //获取校验规则Id
-    ipVal = get_multiple_select_value("ipList")
+    ipVal = get_multiple_select_value("ipList");
     $.ajax(
         {
             url: "/runtest.json",
@@ -149,43 +149,42 @@ var TableInit = function (test_case_id) {
             }, {
                 field: 'browser_type',
                 title: '浏览器类型'
-            }
-                , {
-                    field: 'status',
-                    title: '执行状态',
-                    formatter: function (value, row, index) {
-                        //通过判断单元格的值，来格式化单元格，返回的值即为格式化后包含的元素
-                        var a = "";
-                        if (value == "1-执行成功") {
-                            var a = '<span style="color:#00ff00">' + value + '</span>';
-                        } else if (value == "2-执行失败") {
-                            var a = '<span style="color:#0000ff">' + value + '</span>';
-                        } else if (value == "0-待执行") {
-                            var a = '<span style="color:#FF0000">' + value + '</span>';
-                        } else {
-                            var a = '<span>' + value + '</span>';
-                        }
-                        return a;
+            }, {
+                field: 'status',
+                title: '执行状态',
+                formatter: function (value, row, index) {
+                    //通过判断单元格的值，来格式化单元格，返回的值即为格式化后包含的元素
+                    var a = "";
+                    if (value == "1-执行成功") {
+                        var a = '<span style="color:#00ff00">' + value + '</span>';
+                    } else if (value == "2-执行失败") {
+                        var a = '<span style="color:#0000ff">' + value + '</span>';
+                    } else if (value == "0-待执行") {
+                        var a = '<span style="color:#FF0000">' + value + '</span>';
+                    } else {
+                        var a = '<span>' + value + '</span>';
                     }
-                }, {
-                    field: 'steps',
-                    title: '步骤'
-                }, {
-                    field: 'runtime',
-                    title: '执行时间'
-                }, {
-                    field: 'screenshot',
-                    title: '截图',
-                    align: 'center',
-                    formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="window.location.href=(\'/view_test_suite_screenshot?type=test_case&test_batch_id=' + test_case_id + '&id=' + row.id + '\')">截图</a> ';
-                        var b = '<a href="javascript:;" onclick="run_test_batch_record(\'' + row.id + '\',\'' + row.test_case_id + '\')">重跑</a> ';
-                        return b + a;
-                    }
-                }, {
-                    field: 'message',
-                    title: '描述'
+                    return a;
                 }
+            }, {
+                field: 'steps',
+                title: '步骤'
+            }, {
+                field: 'runtime',
+                title: '执行时间'
+            }, {
+                field: 'screenshot',
+                title: '截图',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    var a = '<a href="javascript:;" onclick="window.location.href=(\'/view_test_suite_screenshot?type=test_case&test_batch_id=' + test_case_id + '&id=' + row.id + '\')">截图</a> ';
+                    var b = '<a href="javascript:;" onclick="run_test_batch_record(\'' + row.id + '\',\'' + row.test_case_id + '\')">重跑</a> ';
+                    return b + a;
+                }
+            }, {
+                field: 'message',
+                title: '描述'
+            }
             ]
         });
     };
@@ -222,7 +221,7 @@ var TableInit = function (test_case_id) {
 function get_test_case_info(active_id) {
 
     if (!active_id) {
-        alert('Error！');
+        window.alert('Error！');
         return false;
     }
 
@@ -251,9 +250,9 @@ function get_test_case_info(active_id) {
                     if (data_obj.module == 'android') {
                         getDevices();
                     } else {
-                        $("#ipList").hide();
-                        $("#btn_runIp_test").hide();
-                        $("#ipListLabel").hide();
+                        $("#ipList").hide();  // 设备列表框
+                        $("#btn_runIp_test").hide();  // 指定设备重跑按钮
+                        $("#ipListLabel").hide();  // 设备列表框label
                     }
                 } else {
                     $("#tip").html("<span style='color:red'>失败，请重试</span>");

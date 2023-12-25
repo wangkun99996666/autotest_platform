@@ -196,3 +196,11 @@ def hBody(j, needRE):
         body = re.sub(r'\\', '', body)
         body = json.loads(body)
     return body
+
+
+@mod.route('/deleteHub')
+@user.authorize
+def delete_hub():
+    id = request.args.get('id')
+    hubs.hubs().deleteHub(id)
+    return {'code': 200}

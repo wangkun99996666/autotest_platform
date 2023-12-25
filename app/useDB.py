@@ -81,7 +81,7 @@ class mysqlDB(object):
             cursor.close()
             conn.close()
         except:
-            log.log().logger.error('search error')
+            log.log().logger.error('search error--->' + str(sql))
         finally:
             if cursor:
                 cursor.close()
@@ -101,7 +101,7 @@ class mysqlDB(object):
             cursor.close()
             conn.commit()
         except:
-            log.log().logger.error('commit error')
+            log.log().logger.error('commit error--->' + str(sql))
             return False
         finally:
             if cursor:
@@ -119,7 +119,7 @@ class mysqlDB(object):
             cursor.close()
             conn.commit()
         except:
-            log.log().logger.error('commit error')
+            log.log().logger.error('commit error--->' + str(sql))
         finally:
             if cursor:
                 cursor.close()
@@ -135,7 +135,7 @@ class mysqlDB(object):
             values = cursor.fetchall()
             cursor.close()
         except:
-            log.log().logger.error('select error')
+            log.log().logger.error('select error--->' + str(sql))
         finally:
             if cursor:
                 cursor.close()

@@ -139,3 +139,7 @@ class hubs():
             else:
                 log.log().logger.debug(device['ip'] + ' is not ready!')
         return deviceLists
+
+    def deleteHub(self, id):
+        sql = 'DELETE FROM test_hubs WHERE id=' + id
+        useDB.useDB().insert(sql)
