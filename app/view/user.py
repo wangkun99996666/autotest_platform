@@ -16,6 +16,7 @@ def authorize(fn):
     def wrapper():
         user = session.get('user', None)
         if user:
+            user = user[0].get('username')
             log.log().logger.info("已登录")
             return fn()
         else:

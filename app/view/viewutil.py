@@ -3,6 +3,6 @@ def getInfoAttribute(info, field):
         value = info.get(field)
     except:
         value = ''
-    if value == None:
+    if value is None:
         value = ''
     return value

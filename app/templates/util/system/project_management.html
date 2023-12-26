@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}UI自动化 测试平台 - module management{% endblock %}
+
+{% block head %}
+    <meta name="viewport" content="width=device-width"/>
+    <script src="../static/jquery-1.12.4.js"></script>
+    <script src="../static/scripts/util/init.js"></script>
+    <script src="../static/scripts/util/util.js"></script>
+    <script src="../static/scripts/others/project.js"></script>
+
+    <script src="../static/bootstrap-3.3.7-dist/dist/js/bootstrap.js"></script>
+    <link href="../static/bootstrap-3.3.7-dist/dist/css/bootstrap.css" rel="stylesheet"/>
+
+    <script src="../static/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <link href="../static/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet"/>
+
+{% endblock %}
+{% block content %}
+    <div class="panel-body" style="padding-bottom:0px;">
+        <h1 style="text-align:center">创建｜更新项目</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading">查询条件</div>
+            <div class="panel-body">
+                <form id="formSearch" class="form-horizontal">
+                    <div class="form-group" style="margin-top:15px">
+                        <label class="control-label col-sm-1" for="name">项目</label>
+                        <div class="col-sm-1">
+                            <select class="form-control" onchange="selectOnchang(this)" id="selectModule">
+                                <option>All</option>
+                                <option>项目1</option>
+                                <option>项目2</option>
+                                <option>项目3</option>
+                            </select>
+                        </div>
+                        <label class="control-label col-sm-1" for="name">名称</label>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="name">
+                        </div>
+
+                        <div class="col-sm-2" style="text-align:left;">
+                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary"
+                                    onclick="searchProject()">查询
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="toolbar" class="btn-group">
+            <button id="btn_add" type="button" class="btn btn-default"
+                    onclick="window.location.href=('/add_new_project')">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+            </button>
+        </div>
+        <table id="tb_project"></table>
+    </div>
+{% endblock %}
