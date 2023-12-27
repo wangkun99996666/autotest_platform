@@ -44,6 +44,8 @@ def search_project():
     offset = (offset - 1) * limit
     project = viewutil.getInfoAttribute(info, 'project')
     type = viewutil.getInfoAttribute(info, 'type')
+    if name == 'All':
+        name = ''
     results = test_project.test_project_manage().search_project(name)
     dict_resilts = [{'id': mid, 'name': name, 'domain': domain, 'description': description, 'creator': creator} for
                     mid, name, domain, description, creator in results]

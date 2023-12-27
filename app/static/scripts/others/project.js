@@ -65,6 +65,10 @@ function selectOnchang(){
 
 }
 
+function selectFunction(test_case_id){
+    var $tb_departments = $('#tb_project');
+    $tb_departments.bootstrapTable('refresh', {url: '/search_project', data: {type: "test_project"}});
+}
 
 $(function () {
     //1.初始化Table
