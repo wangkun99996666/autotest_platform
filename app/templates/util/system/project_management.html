@@ -26,11 +26,8 @@
                     <div class="form-group" style="margin-top:15px">
                         <label class="control-label col-sm-1" for="name">项目</label>
                         <div class="col-sm-1">
-                            <select class="form-control" onchange="selectOnchang(this)" id="selectModule">
-                                <option>All</option>
-                                <option>项目1</option>
-                                <option>项目2</option>
-                                <option>项目3</option>
+                            <select class="form-control" onchange="selectOnchang(this)" id="selectProject">
+                                <option value="All">All</option>
                             </select>
                         </div>
                         <label class="control-label col-sm-1" for="name">名称</label>
@@ -40,7 +37,7 @@
 
                         <div class="col-sm-2" style="text-align:left;">
                             <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary"
-                                    onclick="searchProject()">查询
+                                    onclick="selectProject()">查询
                             </button>
                         </div>
                     </div>

@@ -31,3 +31,36 @@ def save_new_project():
         else:
             test_project.test_project_manage().add_project(project_name, project_domain, project_description)
         return redirect('/maintain_project')
+
+
+@mod.route('/search_project', methods=['POST'])
+@user.authorize
+def search_project():
+    info = request.json
+    log.log().logger.info('info : %s' % info)
+    limit = viewutil.getInfoAttribute(info, 'limit')
+    name = viewutil.getInfoAttribute(info, 'name')
+    offset = viewutil.getInfoAttribute(info, 'offset')
+    offset = (offset - 1) * limit
+    project = viewutil.getInfoAttribute(info, 'project')
+    type = viewutil.getInfoAttribute(info, 'type')
+    results = test_project.test_project_manage().search_project(name)
+    dict_resilts = [{'id': mid, 'name': name, 'domain': domain, 'description': description, 'creator': creator} for
+                    mid, name, domain, description, creator in results]
+    lenth = len(dict_resilts)
+    results = {"total": lenth, "rows": dict_resilts}
+    return results
+
+
+@mod.route('/search_project_name', methods=['POST'])
+@user.authorize
+def search_project_name():
+    info = request.json
+    log.log().logger.info('info : %s' % info)
+    projectName = viewutil.getInfoAttribute(info, 'projectName')
+    if projectName == 'All':
+        projectName = ''
+    results = test_project.test_project_manage().search_project(projectName)
+    searchName = [m[1] for m in results]
+    searchName = str(set(searchName))[2:-2].replace("'", "")
+    return jsonify({"projectName": searchName})

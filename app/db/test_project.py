@@ -14,5 +14,11 @@ class test_project_manage:
         sql = sql.substitute(name=name, domain=domain, description=description, creator=creator)
         useDB.useDB().insert(sql)
 
-    def search_project(self):
-        sql = string.Template('')
+    def search_project(self, name):
+        if name == '':
+            sql = 'SELECT id, project_name, project_domain, project_description, project_creator FROM project;'
+        else:
+            sql = string.Template(
+                'SELECT id, project_name, project_domain, project_description, project_creator FROM project WHERE project_name="$project_name";')
+            sql = sql.substitute(project_name=name)
+        return useDB.useDB().search(sql)

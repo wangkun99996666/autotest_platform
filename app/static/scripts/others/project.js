@@ -7,9 +7,8 @@ function submitNewProject() {
         method: "POST",
         dataType: "json",
         data: {"projectName": name, "projectDomain": domain, "projectDescription": description},
-        success: function (data){
-            console.log(data);
-            window.location.href="/maintain_project";
+        success: function (data) {
+            window.location.href = "/maintain_project";
         },
         error: function (xhr, status, error) {
             window.alert("请求出错....");
@@ -17,15 +16,61 @@ function submitNewProject() {
     });
 }
 
-function searchProject() {
+function searchProjectName() {
+    var project_name = $('#selectProject').val();
+    $.ajax({
+        url: "/search_project_name",
+        method: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify({"projectName": project_name}),
+        success: function (data) {
+            var name = data.projectName;
+            var selectElement = $('#selectProject');
+            if (name === 't'){
+            //    处理无项目情况
+            }else {
+                // 多个项目返回数组
+                if ((name.indexOf(", ")) !== -1) {
+                    var arr = name.split(', ');
+                    var op = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        op[i] = {value: arr[i], text: arr[i]};
+                    }
+                    // 遍历选项数据，创建并添加 option 元素
+                    $.each(op, function (index, option) {
+                        // 使用 append 方法添加 option 元素
+                        selectElement.append($('<option>', {
+                            value: option.value,
+                            text: option.text
+                        }));
+                    });
+                }else { // 单一项目情况
+                    selectElement.append($('<option>', {
+                        value: name,
+                        text: name
+                    }));
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            window.alert("请求出错....");
+        }
+    });
+}
+
+function selectOnchang(){
+    var text = $("#selectProject").val();
+    $("#name").val(text);
 
 }
 
-$(function () {
 
+$(function () {
     //1.初始化Table
     var oTable = new TableInit();
     oTable.Init();
+    searchProjectName();
 
 
 });
@@ -35,8 +80,8 @@ var TableInit = function () {
     //初始化Table
     oTableInit.Init = function () {
         $('#tb_project').bootstrapTable({
-            url: '/search_priject',         //请求后台的URL（*）
-            method: 'get',                      //请求方式（*）
+            url: '/search_project',         //请求后台的URL（*）
+            method: 'post',                      //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器
             striped: true,                      //是否显示行间隔色
             cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
@@ -82,38 +127,15 @@ var TableInit = function () {
                     title: '操作',
                     align: 'center',
                     formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="window.location.href=(\'/edit_test_case?id=' + row.id + '\')">编辑</a> ';
-                        var b = '<a href="javascript:;" onclick="copy_test_case(\'' + row.id + '\')">复制</a> ';
-                        var c = '<a href="javascript:;" onclick="run_test_case(\'' + row.id + '\')">执行</a> ';
-                        var d = '<a href="javascript:;" onclick="window.location.href=(\'/test_case_runhistory?id=' + row.id + '\')">执行结果</a> ';
-                        var e = '<a href="javascript:;" onclick="delete_test_case(\'' + row.id + '\')">删除</a> ';
-                        return a + b + c + d + e;
+                        var a = '<a href="javascript:;" onclick="">编辑</a> ';
+                        var b = '<a href="javascript:;" onclick="">复制</a> ';
+                        var e = '<a href="javascript:;" onclick="">删除</a> ';
+                        return a + b + e;
                     }
                 }
             ]
         });
     };
-
-    function edit(index) {
-        window.location.href = ('/edit_test_case?id=' + index);
-    }
-
-    function operateFormatter(value, row, index) {
-        return [
-            '<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>',
-            '<button type="button" class="RoleOfDelete btn btn-default  btn-sm" style="margin-right:15px;">删除</button>'
-        ].join('');
-    }
-
-    window.operateEvents = {
-        'click .RoleOfEdit': function (e, value, row, index) {
-            window.location.href = ('/add_test_case');
-        },
-        'click .RoleOfDelete': function (e, value, row, index) {
-            alert("B");
-        }
-    }
-
 
     //得到查询的参数
     oTableInit.queryParams = function (params) {
@@ -121,8 +143,8 @@ var TableInit = function () {
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
             name: $("#name").val(),
-            module: $("#selectModule").val(),
-            type: "test_cases"
+            project: $("#selectProject").val(),
+            type: "test_project"
         };
         return temp;
     };
