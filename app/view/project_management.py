@@ -9,7 +9,7 @@ mod = Blueprint('project', __name__,
 
 @mod.route('/maintain_project')
 @user.authorize
-def test_suite():
+def project():
     return render_template("util/system/project_management.html")
 
 

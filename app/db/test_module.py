@@ -1,22 +1,27 @@
 from app import useDB, log
-import string
+import string, datetime
 from flask import session
 
 
-class test_project_manage:
-    def add_project(self, name, domain, description):
+class test_module_manage:
+    def add_module(self, name, description, project_name):
+        """
+        添加模块信息
+        param: name:str 模块名称
+        param: description: str 模块描述
+        param: project_name: str 项目名称
+        """
         if session.get('user', None):
             creator = session.get('user')[0].get('username')
         else:
             creator = 'backendCreator'
-        sql = string.Template(
-            'insert into project (project_name, project_domain, project_description, project_creator) values ("$name","$domain","$description","$creator");')
-        sql = sql.substitute(name=name, domain=domain, description=description, creator=creator)
+        current = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        sql = f'INSERT INTO module(module_name, module_description, module_creator,creator_time,project_id) SELECT "{name}","{description}","{creator}","{current}", id FROM project WHERE project_name = "{project_name}";'
         useDB.useDB().insert(sql)
 
     def search_project(self, name):
         """
-        查询项目信息
+        module模块中当添加的项目名称为All时，需要查询项目表中有多少项目
         param: name: str 填写时，查询指定名称项目名，当为''时，查询全部项目
         return: 返回 [()] 类型
         """
