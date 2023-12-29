@@ -71,15 +71,42 @@ function searchProjectName() {
     });
 }
 
+function searchModuleName() {
+    var project_name = $('#selectProject').val();
+    var module_name = $('#selectModule').val();
+    var selectElement = $('#selectModule');
+    $.ajax({
+        url: "/search_module_name",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({projectName: project_name.toString(), module_name: module_name}),
+        success: function (data) {
+            if (data.code == "200"){
+                var op = [];
+                for (var i = 0; i < data.message.length; i++) {
+                    op[i]=data.message[i].name;
+                }
+                $.each(op, function (index, option){
+                    selectElement.append($("<option>",{
+                        value: op[index],
+                        text: op[index]
+                    }));
+                });
+            }
+        }
+    });
+}
+
 function selectOnchang() {
     var text = $("#selectProject").val();
     $("#name").val(text);
 
 }
 
-function selectFunction(test_case_id) {
-    var $tb_departments = $('#tb_project');
-    $tb_departments.bootstrapTable('refresh', {url: '/search_project', data: {type: "test_project"}});
+function selectModuleFunction() {
+    var $tb_departments = $('#tb_module');
+    $tb_departments.bootstrapTable('refresh', {url: '/search_module', data: {type: "test_module"}});
 }
 
 $(function () {
@@ -87,6 +114,7 @@ $(function () {
     var oTable = new TableInit();
     oTable.Init();
     searchProjectName();
+    searchModuleName();
 
 
 });
@@ -95,8 +123,8 @@ var TableInit = function () {
     var oTableInit = new Object();
     //初始化Table
     oTableInit.Init = function () {
-        $('#tb_project').bootstrapTable({
-            url: '/search_project',         //请求后台的URL（*）
+        $('#tb_module').bootstrapTable({
+            url: '/search_module',         //请求后台的URL（*）
             method: 'post',                      //请求方式（*）
             toolbar: '#toolbar',                //工具按钮用哪个容器
             striped: true,                      //是否显示行间隔色
@@ -127,16 +155,19 @@ var TableInit = function () {
                 title: 'id'
             }, {
                 field: 'name',
-                title: '项目名称'
-            }, {
-                field: 'domain',
-                title: '项目域名'
+                title: '模块名称'
             }, {
                 field: 'description',
                 title: '项目描述'
             }, {
                 field: 'creator',
                 title: '创建人'
+            }, {
+                field: 'time',
+                title: '创建时间'
+            }, {
+                field: 'projectName',
+                title: '项目名称'
             },
                 {
                     field: 'operate',
@@ -158,8 +189,8 @@ var TableInit = function () {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
-            name: $("#name").val(),
-            project: $("#selectProject").val(),
+            project: $("#selectProject").val(), // 项目名称
+            module: $("#selectModule").val(), // 模块名称
             type: "test_project"
         };
         return temp;

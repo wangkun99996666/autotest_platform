@@ -22,7 +22,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">查询条件</div>
             <div class="panel-body">
-                <form id="formSearch" class="form-horizontal">
+                <form id="formSearch" class="form-horizontal" onsubmit="return false">
                     <div class="form-group" style="margin-top:15px">
                         <label class="control-label col-sm-1" for="name">项目</label>
                         <div class="col-sm-2">
@@ -32,18 +32,18 @@
                         </div>
                         <label class="control-label col-sm-1" for="name">模块</label>
                         <div class="col-sm-2">
-                            <select class="form-control" onchange="selectOnchangModule(this)" id="selectModule">
+                            <select class="form-control"  id="selectModule">
                                 <option value="All">All</option>
                             </select>
                         </div>
-                        <label class="control-label col-sm-1" for="name">模块名称</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="moduleName" disabled>
-                        </div>
+{#                        <label class="control-label col-sm-1" for="name">模块名称</label>#}
+{#                        <div class="col-sm-2">#}
+{#                            <input type="text" class="form-control" id="moduleName" disabled>#}
+{#                        </div>#}
 
                         <div class="col-sm-2" style="text-align:left;">
                             <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary"
-                                    onclick="selectModule()">查询
+                                    onclick="selectModuleFunction()">查询
                             </button>
                         </div>
                     </div>

@@ -32,3 +32,16 @@ class test_module_manage:
                 'SELECT id, project_name, project_domain, project_description, project_creator FROM project WHERE project_name="$project_name";')
             sql = sql.substitute(project_name=name)
         return useDB.useDB().search(sql)
+
+    def search_module(self, project_name='', module_name=''):
+        # 点击进入模块页面使用的sql
+        if project_name == '' and module_name == '':
+            sql = 'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id;'
+        elif len(project_name) > 0 and len(module_name) == 0:
+            sql = f'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id WHERE p.project_name = "{project_name}";'
+        elif len(module_name) > 0 and len(project_name) == 0:
+            sql = f'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id WHERE m.module_name= "{module_name}";'
+        elif len(project_name) > 0 and len(module_name) > 0:
+            sql = f'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id WHERE m.module_name= "{module_name}" AND p.project_name ="{project_name}";'
+        return useDB.useDB().search(sql)
+
