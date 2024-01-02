@@ -10,12 +10,18 @@ mod = Blueprint('project', __name__,
 @mod.route('/maintain_project')
 @user.authorize
 def project():
+    """
+    跳转项目页面
+    """
     return render_template("util/system/project_management.html")
 
 
 @mod.route('/add_new_project', methods=['POST', 'GET'])
 @user.authorize
 def save_new_project():
+    """
+    保存新项目
+    """
     log.log().logger.info(request)
     if request.method == 'GET':
         # log.log().logger.info('Get')
@@ -36,6 +42,9 @@ def save_new_project():
 @mod.route('/search_project', methods=['POST'])
 @user.authorize
 def search_project():
+    """
+    搜索项目
+    """
     info = request.json
     log.log().logger.info('info : %s' % info)
     limit = viewutil.getInfoAttribute(info, 'limit')
@@ -57,6 +66,9 @@ def search_project():
 @mod.route('/search_project_name', methods=['POST'])
 @user.authorize
 def search_project_name():
+    """
+    搜索项目名称
+    """
     info = request.json
     log.log().logger.info('info : %s' % info)
     projectName = viewutil.getInfoAttribute(info, 'projectName')
@@ -75,14 +87,17 @@ def save_edit_project():
     project_name = info.get("projectName", "")
     project_domain = info.get("projectDomain", "")
     project_desc = info.get("projectDescription", "")
-    rid = info.get("id", "")
+    rid = info.get("projectId", "")
     result = test_project.test_project_manage().edit_project(project_name, project_domain, project_desc, rid)
     return jsonify({"code": 200, "message": "请求成功"})
 
 
-@mod.route('/edit_project', methods=['POST'])
+@mod.route('/show_project', methods=['POST'])
 @user.authorize
-def edit_project():
+def show_project():
+    """
+    进入编辑页面，回显数据使用
+    """
     info = request.json
     projectId = info.get("projectId", "")
     result = test_project.test_project_manage().search_project(name='', rid=projectId)
@@ -92,11 +107,17 @@ def edit_project():
 @mod.route('/open_edit_project', methods=['GET'])
 @user.authorize
 def open_edit_project():
+    """
+    跳转编辑模块页面
+    """
     return render_template("util/system/edit_project.html")
 
 @mod.route('/copy_project', methods=['POST'])
 @user.authorize
 def copy_project():
+    """
+    复制项目
+    """
     info = request.json
     rid = info.get("projectId", "")
     result = test_project.test_project_manage().copy_project(rid)
@@ -105,7 +126,11 @@ def copy_project():
 @mod.route('/delete_project', methods=['POST'])
 @user.authorize
 def delete_project():
+    """
+    删除项目
+    """
     info = request.json
     rid = info.get("projectId", "")
     result = test_project.test_project_manage().delete_project(rid)
     return jsonify({"code": 200, "message": "请求成功"})
+

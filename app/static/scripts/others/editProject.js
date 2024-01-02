@@ -2,12 +2,13 @@ function saveEditProject() {
     var name = $("#projectName").val();
     var domain = $("#projectDomain").val();
     var description = $("#projectDescription").val();
+    var pid = getUrlParameter("id");
     $.ajax({
-        url: "/edit_project",
+        url: "/save_edit_project",
         method: "POST",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify({projectName: name, projectDomain: domain, projectDescription: description}),
+        data: JSON.stringify({projectId: pid, projectName: name, projectDomain: domain, projectDescription: description}),
         success: function (data) {
             if (data.code == '200') {
                 window.location.href = "/maintain_project";
@@ -35,7 +36,7 @@ $(function () {
 function showdata(projectId){
         // 跳转到编辑项目页面后，请求数据库获取数据回显
     $.ajax({
-        url: "/edit_project",
+        url: "/show_project",
         method: "POST",
         dataType: "json",
         contentType: "application/json",
