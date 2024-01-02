@@ -6,9 +6,12 @@ function submitNewProject() {
         url: "/add_new_project",
         method: "POST",
         dataType: "json",
-        data: {"projectName": name, "projectDomain": domain, "projectDescription": description},
+        contentType: "application/json",
+        data: JSON.stringify({projectName: name, projectDomain: domain, projectDescription: description}),
         success: function (data) {
-            window.location.href = "/maintain_project";
+            if (data.code == '200'){
+                window.location.href = "/maintain_project";
+            }
         },
         error: function (xhr, status, error) {
             window.alert("请求出错....");

@@ -158,9 +158,7 @@ function get_edit_info(active_id) {
                 if (data) {
                     // 解析json数据
                     var data = data;
-//              var data_obj0 = eval("("+data+")");
-//              var data_obj = eval("("+data_obj0+")");
-                    var data_obj = data.rows
+                    var data_obj = data.rows;
 
                     // 赋值
                     $("#id").val(active_id);
@@ -232,8 +230,6 @@ function delete_test_case(active_id) {
             });
 
     }
-
-    // var form_data = new Array();
     return false;
 }
 
@@ -312,7 +308,6 @@ function openEditStepWindow() {
     document.getElementById('editStep').style.display = 'block';
     document.getElementById('fade').style.display = 'block';
     var options = keywordOption();
-//    alert(options);
 
     var content = $("#steps").val();
     if (content == '') {
@@ -342,12 +337,9 @@ function closeEditStepWindow() {
 
 
 function addBody(content, order, options, isInsert) {
-//    alert(options);
 
     var tbody = document.getElementsByTagName('tbody')[0];
-//    alert(isInsert);
     if (isInsert == 1) {
-//        alert('insert new:'+order);
         var table = document.getElementById('stepsTable');
         var tr = table.insertRow(order);
         var ran = Math.floor(Math.random() * (100 - 10 + 1) + 10);
@@ -357,7 +349,7 @@ function addBody(content, order, options, isInsert) {
     }
 
     var words = content.split('|');
-    var tdoperate = document.createElement('td')
+    var tdoperate = document.createElement('td');
     var addBtn = document.createElement('a');
     var delBtn = document.createElement('a');
     var copyBtn = document.createElement('a');
@@ -385,9 +377,8 @@ function addBody(content, order, options, isInsert) {
     tdoperate.appendChild(copyBtn);
     tr.appendChild(tdoperate);
 
-    var tdvalue = document.createElement('td')
-//    tdvalue.innerHTML=words[0];
-    var select = selectOptions(options, words[0])
+    var tdvalue = document.createElement('td');
+    var select = selectOptions(options, words[0]);
     select.setAttribute("id", "td_keyword_" + order);
     select.setAttribute("onchange", "if(this.value != '') changeValue(this,'" + order + "');");
     tdvalue.appendChild(select);
@@ -420,7 +411,7 @@ function addBody(content, order, options, isInsert) {
         }
 
     }
-    var tdvalue = document.createElement('td')
+    var tdvalue = document.createElement('td');
     tdvalue.contentEditable = "true";
     tdvalue.setAttribute("class", "td_content");
     tdvalue.setAttribute("id", "td_content_" + order);
@@ -446,13 +437,11 @@ function change(obj, order) {
     var paras = document.getElementsByClassName("td_para_" + order);
     var newvalue = keyword.options[keyword.selectedIndex].value;
     var methodSelect = paras[0].getElementsByClassName('method');
-//alert(methodSelect.length);
     if (methodSelect.length == 1) {
         method = methodSelect[0].options[methodSelect[0].selectedIndex].value;
     } else {
         method = paras[0].textContent;
     }
-//alert(method);
     if (method != '') {
         newvalue = newvalue + '|' + method;
     }
@@ -477,7 +466,6 @@ function SaveAndCloseEditStepWindow() {
         }
     }
 
-//    alert(stepsvalue);
     $("#steps").val(stepsvalue);
     closeEditStepWindow();
 
@@ -485,7 +473,6 @@ function SaveAndCloseEditStepWindow() {
 
 
 function selectOptions(options, defaultOption) {
-//alert(options);
     var select = document.createElement('select');
     for (var i = 0; i < options.length; i++) {
         var option = document.createElement('option');
@@ -502,7 +489,7 @@ function selectOptions(options, defaultOption) {
 
 function keywordOption() {
 
-    var options = []
+    var options = [];
 
     $.ajax(
         {
@@ -522,17 +509,15 @@ function keywordOption() {
                 alert('请求出错');
             },
             complete: function () {
-                // $('#tips').hide();
             }
         });
-//alert('options are :'+options);
     return options;
 }
 
 
 function getPublicFunctions() {
 
-    var cases = []
+    var cases = [];
 
     $.ajax(
         {
@@ -544,7 +529,6 @@ function getPublicFunctions() {
                 return true;
             },
             success: function (data) {
-//        alert(data.rows);
                 cases = data.rows;
 
             },
@@ -555,7 +539,6 @@ function getPublicFunctions() {
                 // $('#tips').hide();
             }
         });
-//alert('options are :'+options);
     return cases;
 }
 

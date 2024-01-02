@@ -21,7 +21,7 @@ def save_new_project():
         # log.log().logger.info('Get')
         return render_template("util/system/add_project.html")
     if request.method == 'POST':
-        info = request.form
+        info = request.json
         log.log().logger.info('info : %s' % info)
         project_name = viewutil.getInfoAttribute(info, 'projectName')
         project_domain = viewutil.getInfoAttribute(info, 'projectDomain')
@@ -30,7 +30,7 @@ def save_new_project():
             return jsonify({"code": 201, "message": "必填字段不能为空"})
         else:
             test_project.test_project_manage().add_project(project_name, project_domain, project_description)
-        return redirect('/maintain_project')
+        return jsonify({"code": 200, "message": "请求成功"})
 
 
 @mod.route('/search_project', methods=['POST'])
