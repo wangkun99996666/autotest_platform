@@ -66,3 +66,46 @@ def search_project_name():
     searchName = [m[1] for m in results]
     searchName = str(set(searchName))[2:-2].replace("'", "")
     return jsonify({"projectName": searchName})
+
+
+@mod.route('/save_edit_project', methods=['POST'])
+@user.authorize
+def save_edit_project():
+    info = request.json
+    project_name = info.get("projectName", "")
+    project_domain = info.get("projectDomain", "")
+    project_desc = info.get("projectDescription", "")
+    rid = info.get("id", "")
+    result = test_project.test_project_manage().edit_project(project_name, project_domain, project_desc, rid)
+    return jsonify({"code": 200, "message": "请求成功"})
+
+
+@mod.route('/edit_project', methods=['POST'])
+@user.authorize
+def edit_project():
+    info = request.json
+    projectId = info.get("projectId", "")
+    result = test_project.test_project_manage().search_project(name='', rid=projectId)
+    result_list = [{"id": m[0], "name": m[1], "domain": m[2], "description": m[3], "creator": m[4]} for m in result]
+    return jsonify({"code": 200, "message": result_list})
+
+@mod.route('/open_edit_project', methods=['GET'])
+@user.authorize
+def open_edit_project():
+    return render_template("util/system/edit_project.html")
+
+@mod.route('/copy_project', methods=['POST'])
+@user.authorize
+def copy_project():
+    info = request.json
+    rid = info.get("projectId", "")
+    result = test_project.test_project_manage().copy_project(rid)
+    return jsonify({"code": 200, "message": "请求成功"})
+
+@mod.route('/delete_project', methods=['POST'])
+@user.authorize
+def delete_project():
+    info = request.json
+    rid = info.get("projectId", "")
+    result = test_project.test_project_manage().delete_project(rid)
+    return jsonify({"code": 200, "message": "请求成功"})

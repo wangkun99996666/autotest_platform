@@ -9,7 +9,7 @@ function submitNewProject() {
         contentType: "application/json",
         data: JSON.stringify({projectName: name, projectDomain: domain, projectDescription: description}),
         success: function (data) {
-            if (data.code == '200'){
+            if (data.code == '200') {
                 window.location.href = "/maintain_project";
             }
         },
@@ -20,6 +20,7 @@ function submitNewProject() {
 }
 
 function searchProjectName() {
+    // 项目页面 查询项目名称
     var project_name = $('#selectProject').val();
     $.ajax({
         url: "/search_project_name",
@@ -30,9 +31,9 @@ function searchProjectName() {
         success: function (data) {
             var name = data.projectName;
             var selectElement = $('#selectProject');
-            if (name === 't'){
-            //    处理无项目情况
-            }else {
+            if (name === 't') {
+                //    处理无项目情况
+            } else {
                 // 多个项目返回数组
                 if ((name.indexOf(", ")) !== -1) {
                     var arr = name.split(', ');
@@ -44,14 +45,12 @@ function searchProjectName() {
                     $.each(op, function (index, option) {
                         // 使用 append 方法添加 option 元素
                         selectElement.append($('<option>', {
-                            value: option.value,
-                            text: option.text
+                            value: option.value, text: option.text
                         }));
                     });
-                }else { // 单一项目情况
+                } else { // 单一项目情况
                     selectElement.append($('<option>', {
-                        value: name,
-                        text: name
+                        value: name, text: name
                     }));
                 }
             }
@@ -62,19 +61,20 @@ function searchProjectName() {
     });
 }
 
-function selectOnchang(){
+function selectOnchang() {
     var text = $("#selectProject").val();
     $("#name").val(text);
 
 }
 
-function selectFunction(test_case_id){
+function selectFunction(test_case_id) {
+    // 项目页面查询按钮
     var $tb_departments = $('#tb_project');
     $tb_departments.bootstrapTable('refresh', {url: '/search_project', data: {type: "test_project"}});
 }
 
 $(function () {
-    //1.初始化Table
+    // 初始化Table
     var oTable = new TableInit();
     oTable.Init();
     searchProjectName();
@@ -101,8 +101,7 @@ var TableInit = function () {
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 25, 50, 100, 500],        //可供选择的每页的行数（*）
             search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
-            strictSearch: false,
-            showColumns: true,                  //是否显示所有的列
+            strictSearch: false, showColumns: true,                  //是否显示所有的列
             showRefresh: true,                  //是否显示刷新按钮
             minimumCountColumns: 2,             //最少允许的列数
             clickToSelect: true,                //是否启用点击选中行
@@ -114,33 +113,23 @@ var TableInit = function () {
             columns: [{
                 checkbox: true
             }, {
-                field: 'id',
-                title: 'id'
+                field: 'id', title: 'id'
             }, {
-                field: 'name',
-                title: '项目名称'
+                field: 'name', title: '项目名称'
             }, {
-                field: 'domain',
-                title: '项目域名'
+                field: 'domain', title: '项目域名'
             }, {
-                field: 'description',
-                title: '项目描述'
+                field: 'description', title: '项目描述'
             }, {
-                field: 'creator',
-                title: '创建人'
-            },
-                {
-                    field: 'operate',
-                    title: '操作',
-                    align: 'center',
-                    formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="">编辑</a> ';
-                        var b = '<a href="javascript:;" onclick="">复制</a> ';
-                        var e = '<a href="javascript:;" onclick="">删除</a> ';
-                        return a + b + e;
-                    }
+                field: 'creator', title: '创建人'
+            }, {
+                field: 'operate', title: '操作', align: 'center', formatter: function (value, row, index) {
+                    var a = '<a href="javascript:;" onclick="editproject(' + row.id + ')">编辑</a> ';
+                    var b = '<a href="javascript:;" onclick="copyproject(' + row.id + ')">复制</a> ';
+                    var e = '<a href="javascript:;" onclick="deleteproject(' + row.id + ')">删除</a> ';
+                    return a + b + e;
                 }
-            ]
+            }]
         });
     };
 
@@ -149,11 +138,53 @@ var TableInit = function () {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
-            name: $("#name").val(),
-            project: $("#selectProject").val(),
-            type: "test_project"
+            name: $("#name").val(), project: $("#selectProject").val(), type: "test_project"
         };
         return temp;
     };
     return oTableInit;
 };
+
+function editproject(projectId) {
+    window.location.href = '/open_edit_project?id=' + projectId;
+}
+
+function copyproject(projectId) {
+    $.ajax(
+        {
+            url: "/copy_project",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({projectId: projectId}),
+            success: function (data) {
+                if (data.code == '200') {
+                    window.location.href = "/maintain_project";
+                }
+            },
+            error: function (xhr, status, error) {
+                window.alert("请求出错....");
+            }
+        }
+    );
+}
+
+function deleteproject(projectId) {
+    $.ajax(
+        {
+            url: "/delete_project",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({projectId: projectId}),
+            success: function (data) {
+                if (data.code == '200') {
+                    window.location.href = "/maintain_project";
+                }
+            },
+            error: function (xhr, status, error) {
+                window.alert("请求出错....");
+            }
+        }
+    );
+}
