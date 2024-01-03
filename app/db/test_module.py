@@ -45,3 +45,45 @@ class test_module_manage:
             sql = f'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id WHERE m.module_name= "{module_name}" AND p.project_name ="{project_name}";'
         return useDB.useDB().search(sql)
 
+    def delete_module(self, id):
+        """Delete a module"""
+        if session.get('user', None):
+            creator = session.get('user')[0].get('username')
+        else:
+            creator = 'backendCreator'
+        current = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        sql = f'DELETE FROM module WHERE id = {id};'
+        return useDB.useDB().insert(sql)
+
+    def copy_module(self, id):
+        """copy module"""
+        if session.get('user')[0].get('username'):
+            creator = session.get('user')[0].get('username')
+        else:
+            creator = 'backendCreator'
+        current = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        sql = f'INSERT INTO module(module_name, module_description, module_creator,creator_time,project_id) SELECT module_name, module_description, "{creator}", "{current}", project_id FROM module WHERE id = {id};'
+        return useDB.useDB().insert(sql)
+
+    def edit_module(self, module_id, project_name, module_name, module_description):
+        """edit a module"""
+        if session.get('user')[0].get('username'):
+            creator = session.get('user')[0].get('username')
+        else:
+            creator = 'backendCreator'
+        current = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        if len(project_name) > 0 and len(module_name) == 0 and len(module_description) == 0:
+            sql = f'UPDATE module SET project_id = (SELECT id FROM project WHERE project_name = "{project_name}") WHERE id = "{module_id}";'
+        elif len(project_name) > 0 and len(module_name) > 0 and len(module_description) == 0:
+            sql = f'UPDATE module SET project_id = (SELECT id FROM project  WHERE project_name = "{project_name}"), module_name = "{module_name}" WHERE id = "{module_id}";'
+        elif len(project_name) > 0 and len(module_name) == 0 and len(module_description) > 0:
+            sql = f'UPDATE module SET project_id = (SELECT id FROM project WHERE project_name = "{project_name}"), module_description = "{module_description}" WHERE id = "{module_id}";'
+        elif len(project_name) > 0 and len(module_name) > 0 and len(module_description) > 0:
+            sql = f'UPDATE module SET project_id = (SELECT id FROM project WHERE project_name = "{project_name}"), module_name = "{module_name}", module_description="{module_description}" WHERE id = "{module_id}";'
+        else:
+            return '参数错误'
+        return useDB.useDB().insert(sql)
+
+    def get_module_info(self, module_id):
+        sql = f'SELECT module_name, module_description FROM module WHERE id = {module_id};'
+        return useDB.useDB().search(sql)

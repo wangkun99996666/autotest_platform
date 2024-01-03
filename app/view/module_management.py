@@ -80,3 +80,60 @@ def searchModuleName():
     resuletset = test_module.test_module_manage().search_module()
     resultList = [{"name": res[1]} for res in resuletset]
     return jsonify({"code": 200, "message": resultList})
+
+@mod.post('/delete_module')
+@user.authorize
+def delete_module():
+    """
+    删除模块
+    """
+    info = request.json
+    module_id = info.get("moduleId", "")
+    result = test_module.test_module_manage().delete_module(module_id)
+    return jsonify({"code": 200, "message": result})
+
+@mod.post("/copy_module")
+@user.authorize
+def copy_module():
+    """
+    复制模块
+    """
+    info = request.json
+    module_id = info.get("moduleId", "")
+    result = test_module.test_module_manage().copy_module(module_id)
+    return jsonify({"code": 200, "message": result})
+
+
+@mod.get("/open_edit_module")
+@user.authorize
+def open_edit_module():
+    """
+    打开编辑模块
+    """
+    return render_template("util/system/edit_module.html")
+
+@mod.post("/save_edit_module")
+@user.authorize
+def save_edit_module():
+    """
+    保存编辑模块
+    """
+    info = request.json
+    project_name = info.get("projectName", "")
+    module_name = info.get("moduleName", "")
+    module_description = info.get("moduleDescription", "")
+    module_id = info.get("moduleId", "")
+    result = test_module.test_module_manage().edit_module(module_id, project_name, module_name, module_description)
+    return jsonify({"code": 200, "message": result})
+
+@mod.post("/show_module")
+@user.authorize
+def show_module():
+    """
+    显示模块
+    """
+    info = request.json
+    module_id = info.get("moduleId", "")
+    result = test_module.test_module_manage().get_module_info(module_id)
+    result_list = [{"module_name": m[0], "module_description": m[1]} for m in result]
+    return jsonify({"code": 200, "message": result_list})

@@ -1,19 +1,21 @@
-function submitNewModule() {
+function saveEditModule() {
     var name = $("#selectProject").val();
     var module = $("#moduleName").val();
     var description = $("#moduleDescription").val();
+    var moduleId = getUrlParameter("id");
 
     $.ajax({
-        url: "/save_new_module",
+        url: "/save_edit_module",
         method: "POST",
         cache: false,
         keepalive: true,
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify({
-            projectName: name.toString(),
-            moduleName: module.toString(),
-            moduleDescription: description.toString()
+            moduleId: moduleId,
+            projectName: name,
+            moduleName: module,
+            moduleDescription: description
         }),
         success: function (data) {
             if (data.code == "200") {
@@ -71,129 +73,41 @@ function searchProjectName() {
     });
 }
 
-function searchModuleName() {
-    var project_name = $('#selectProject').val();
-    var module_name = $('#selectModule').val();
-    var selectElement = $('#selectModule');
+$(function () {
+    //1.初始化Table
+    searchProjectName();
+    var module_id = getUrlParameter("id");
+    showdata(module_id);
+});
+
+function getUrlParameter(name) {
+    // 获取点击编辑按钮传人的参数，name 是要获取的参数名
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+    var results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function showdata(moduleId) {
+    // 跳转到编辑项目页面后，请求数据库获取数据回显
     $.ajax({
-        url: "/search_module_name",
+        url: "/show_module",
         method: "POST",
-        contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify({projectName: project_name.toString(), module_name: module_name}),
+        contentType: "application/json",
+        data: JSON.stringify({moduleId: moduleId}),
         success: function (data) {
-            if (data.code == "200"){
-                var op = [];
-                for (var i = 0; i < data.message.length; i++) {
-                    op[i]=data.message[i].name;
-                }
-                $.each(op, function (index, option){
-                    selectElement.append($("<option>",{
-                        value: op[index],
-                        text: op[index]
-                    }));
+            if (data.code == '200') {
+                $(function () {
+                    // $("#selectProject").val(data.message[0].name);
+                    $("#moduleName").val(data.message[0].module_name);
+                    $("#moduleDescription").val(data.message[0].module_description);
                 });
             }
+        },
+        error: function (xhr, status, error) {
+            window.alert("请求出错....");
         }
     });
 }
 
-function selectOnchang() {
-    var text = $("#selectProject").val();
-    $("#name").val(text);
-
-}
-
-function selectModuleFunction() {
-    var $tb_departments = $('#tb_module');
-    $tb_departments.bootstrapTable('refresh', {url: '/search_module', data: {type: "test_module"}});
-}
-
-$(function () {
-    //1.初始化Table
-    var oTable = new TableInit();
-    oTable.Init();
-    searchProjectName();
-    searchModuleName();
-
-
-});
-
-var TableInit = function () {
-    var oTableInit = new Object();
-    //初始化Table
-    oTableInit.Init = function () {
-        $('#tb_module').bootstrapTable({
-            url: '/search_module',         //请求后台的URL（*）
-            method: 'post',                      //请求方式（*）
-            toolbar: '#toolbar',                //工具按钮用哪个容器
-            striped: true,                      //是否显示行间隔色
-            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-            pagination: true,                   //是否显示分页（*）
-            sortable: true,                     //是否启用排序
-            sortOrder: "asc",                   //排序方式
-            queryParams: oTableInit.queryParams,//传递参数（*）
-            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,                       //初始化加载第一页，默认第一页
-            pageSize: 10,                       //每页的记录行数（*）
-            pageList: [10, 25, 50, 100, 500],        //可供选择的每页的行数（*）
-            search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
-            strictSearch: false,
-            showColumns: true,                  //是否显示所有的列
-            showRefresh: true,                  //是否显示刷新按钮
-            minimumCountColumns: 2,             //最少允许的列数
-            clickToSelect: true,                //是否启用点击选中行
-            height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
-            showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
-            cardView: false,                    //是否显示详细视图
-            detailView: false,                   //是否显示父子表
-            columns: [{
-                checkbox: true
-            }, {
-                field: 'id',
-                title: 'id'
-            }, {
-                field: 'name',
-                title: '模块名称'
-            }, {
-                field: 'description',
-                title: '项目描述'
-            }, {
-                field: 'creator',
-                title: '创建人'
-            }, {
-                field: 'time',
-                title: '创建时间'
-            }, {
-                field: 'projectName',
-                title: '项目名称'
-            },
-                {
-                    field: 'operate',
-                    title: '操作',
-                    align: 'center',
-                    formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="">编辑</a> ';
-                        var b = '<a href="javascript:;" onclick="">复制</a> ';
-                        var e = '<a href="javascript:;" onclick="">删除</a> ';
-                        return a + b + e;
-                    }
-                }
-            ]
-        });
-    };
-
-    //得到查询的参数
-    oTableInit.queryParams = function (params) {
-        var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-            limit: params.limit,   //页面大小
-            offset: params.offset,  //页码
-            project: $("#selectProject").val(), // 项目名称
-            module: $("#selectModule").val(), // 模块名称
-            type: "test_project"
-        };
-        return temp;
-    };
-    return oTableInit;
-};

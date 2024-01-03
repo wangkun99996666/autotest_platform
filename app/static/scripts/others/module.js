@@ -174,9 +174,9 @@ var TableInit = function () {
                     title: '操作',
                     align: 'center',
                     formatter: function (value, row, index) {
-                        var a = '<a href="javascript:;" onclick="">编辑</a> ';
-                        var b = '<a href="javascript:;" onclick="">复制</a> ';
-                        var e = '<a href="javascript:;" onclick="">删除</a> ';
+                        var a = '<a href="javascript:;" onclick="editModule('+row.id+')">编辑</a> ';
+                        var b = '<a href="javascript:;" onclick="copymodule('+row.id+')">复制</a> ';
+                        var e = '<a href="javascript:;" onclick="deletemodule('+row.id+')">删除</a> ';
                         return a + b + e;
                     }
                 }
@@ -197,3 +197,47 @@ var TableInit = function () {
     };
     return oTableInit;
 };
+
+function deletemodule(moduleId) {
+    $.ajax(
+        {
+            url: "/delete_module",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({moduleId: moduleId}),
+            success: function (data) {
+                if (data.code == '200') {
+                    window.location.href = "/maintain_module";
+                }
+            },
+            error: function (xhr, status, error) {
+                window.alert("请求出错....");
+            }
+        }
+    );
+}
+
+function copymodule(moduleId) {
+    $.ajax(
+        {
+            url: "/copy_module",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify({moduleId: moduleId}),
+            success: function (data) {
+                if (data.code == '200') {
+                    window.location.href = "/maintain_module";
+                }
+            },
+            error: function (xhr, status, error) {
+                window.alert("请求出错....");
+            }
+        }
+    );
+}
+
+function editModule(moduleId) {
+    window.location.href = '/open_edit_module?id=' + moduleId;
+}
