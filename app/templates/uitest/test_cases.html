@@ -24,28 +24,22 @@
             <div class="panel-body">
                 <form id="formSearch" class="form-horizontal" onsubmit="return false">
                     <div class="form-group" style="margin-top:15px">
-                        <label class="control-label col-sm-1" for="name">项目</label>
+                        <label class="control-label col-sm-1" for="selectProject">项目</label>
                         <div class="col-sm-1">
-                            <select class="form-control" onchange="selectOnchang(this)" id="selectModule">
-                                <option>All</option>
-                                <option>模块1</option>
-                                <option>模块2</option>
-                                <option>模块3</option>
+                            <select class="form-control" onchange="selectOnchang(this)" id="selectProject">
+                                <option value="All">All</option>
                             </select>
                         </div>
-                        <label class="control-label col-sm-1" for="name">模块</label>
+                        <label class="control-label col-sm-1" for="selectModule">模块</label>
                         <div class="col-sm-1">
                             <select class="form-control" onchange="selectOnchang(this)" id="selectModule">
-                                <option>All</option>
-                                <option>模块1</option>
-                                <option>模块2</option>
-                                <option>模块3</option>
+                                <option value="All">All</option>
                             </select>
                         </div>
-                        <label class="control-label col-sm-1" for="name">名称</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="name">
-                        </div>
+{#                        <label class="control-label col-sm-1" for="name">名称</label>#}
+{#                        <div class="col-sm-2">#}
+{#                            <input type="text" class="form-control" id="name">#}
+{#                        </div>#}
 
                         <div class="col-sm-3" style="text-align:left;">
                             <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary"

@@ -62,51 +62,74 @@ class test_case_manage:
         return results
 
     def show_test_cases(self, conditionList, valueList, fieldlist, rows):
-        if len(fieldlist) == 0:
-            fieldlist = ['id', 'module', 'name', 'steps', 'description', 'isPublicFunction']
-        search_value = fieldlist[0]
-        for i in range(1, len(fieldlist)):
-            search_value = search_value + ',' + fieldlist[i]
+        """
+        show test cases
+        :param conditionList: where 子句中的列明
+        :param valueList: where 子句中的值
+        :param fieldlist: 需要显示的列明
+        """
+        if len(fieldlist) == 0:  # 首次进入测试用例页面
+            fieldlist = ['id', 'project', 'module', 'name', 'steps', 'description', 'isPublicFunction']
+        # search_value 是select 查询语句后要显示的列明
+        search_value = ''
+        for i in range(0, len(fieldlist)):
+            if fieldlist[i] == 'id':
+                search_value = search_value + 't.id, '
+            elif fieldlist[i] == 'project':
+                search_value = search_value + 'p.project_name project, '
+            elif fieldlist[i] =='module':
+                search_value = search_value +'m.module_name module, '
+            elif fieldlist[i] == 'name':
+                search_value = search_value + '`name`'
+            else:
+                search_value = search_value + ',' + fieldlist[i]
+        # where 子句中查询条件
         condition = ''
         for i in range(len(conditionList)):
             if i == 0:
-                if conditionList[i] == 'module':
-                    log.log().logger.info(valueList[i])
-                    moduleList = ''
-                    for j in range(len(valueList[i])):
-                        if j:
-                            moduleList += ','
-                        moduleList += '"' + valueList[i][j] + '"'
-                    condition += str(conditionList[i]) + ' in (' + str(moduleList) + ')'
+                if conditionList[i] == 'module':  # 是否会执行,先注释
+                    # log.log().logger.info(valueList[i])
+                    # moduleList = ''
+                    # for j in range(len(valueList[i])):
+                    #     if j:
+                    #         moduleList += ','
+                    #     moduleList += '"' + valueList[i][j] + '"'
+                    # condition += str(conditionList[i]) + ' in (' + str(moduleList) + ')'
+                    pass
                 else:
                     condition += str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
             else:
                 if conditionList[i] == 'module':
-                    log.log().logger.info(valueList[i])
                     moduleList = ''
                     for j in range(len(valueList[i])):
                         if j:
                             moduleList += ','
                         moduleList += '"' + valueList[i][j] + '"'
-                    condition += ' and ' + str(conditionList[i]) + ' in (' + str(moduleList) + ')'
+                    condition += ' and ' + 'm.module_name' + ' in (' + str(moduleList) + ')'
+                elif conditionList[i] == 'project':
+                    projectList = ''
+                    for j in range(len(valueList[i])):
+                        if j:
+                            projectList += ','
+                        projectList += '"' + valueList[i][j] + '"'
+                    condition +=' and '+ 'p.project_name' +' in (' + str(projectList) + ')'
                 else:
                     condition += ' and ' + str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
-                # if condition != '':
-                #     condition += ' and '
+        # 返回的列表 [{}] 类型
         results = []
 
-        sql = 'select ' + search_value + ' from test_case where ' + str(
-            condition) + ' and status = 1  order by id desc limit ' + str(rows) + ';'
+        sql = f'SELECT {search_value} FROM test_case t LEFT JOIN module m ON t.module_id = m.id LEFT JOIN project p ON t.project_id = p.id WHERE {str(condition)} and status = 1  ORDER BY id desc LIMIT {str(rows)};'
         cases = useDB.useDB().search(sql)
         log.log().logger.info('cases : %s' % cases)
         for i in range(len(cases)):
             result = {}
             result['id'] = cases[i][0]
-            result['module'] = cases[i][1]
-            result['name'] = cases[i][2]
-            result['steps'] = cases[i][3]
-            result['description'] = cases[i][4]
-            result['isPublic'] = cases[i][5]
+            result['project'] = cases[i][1]
+            result['module'] = cases[i][2]
+            result['name'] = cases[i][3]
+            result['steps'] = cases[i][4]
+            result['description'] = cases[i][5]
+            result['isPublic'] = cases[i][6]
             results.append(result)
         return results
 

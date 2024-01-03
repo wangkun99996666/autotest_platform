@@ -175,28 +175,29 @@ def delete_test_case():
         return result, {'Content-Type': 'application/json'}
 
 
-@mod.route('/test_case.json', methods=['POST', 'GET'])
+@mod.get('/test_case.json')
 @user.authorize
 def search_test_cases():
-    if request.method == 'POST':
-        log.log().logger.info('post')
     if request.method == 'GET':
         info = request.values
-        log.log().logger.info('info : %s' % info)
         limit = info.get('limit', 10)  # 每页显示的条数
         offset = info.get('offset', 0)  # 分片数，(页码-1)*limit，它表示一段数据的起点
-        log.log().logger.info('get %s' % limit)
-        log.log().logger.info('get  offset %s' % offset)
         id = viewutil.getInfoAttribute(info, 'id')
+        project = viewutil.getInfoAttribute(info, 'projectName')
         module = viewutil.getInfoAttribute(info, 'module')
         type = viewutil.getInfoAttribute(info, 'type')
-        log.log().logger.info('module: %s' % module)
+        project = project.split(',')
         module = module.split(',')
-        log.log().logger.info(module)
         name = viewutil.getInfoAttribute(info, 'name')
         conditionList = ['name']
         valueList = [name]
-        if type == 'unattach' and 'public' in module:
+        if 'All' not in project:  # 如何是All 说明不需要在后续的where 子句中加条件
+            conditionList.append('project')
+            valueList.append(project)
+        if 'All' not in module:  # 如何是All 说明不需要在后续的where 子句中加条件
+            conditionList.append('module')
+            valueList.append(module)
+        if type.lower() == 'unattach' and 'public' in module:
             module.remove('public')
         elif type != 'test_case':
             if len(module) != 0 and module[0] != 'All' and module[0] != '':

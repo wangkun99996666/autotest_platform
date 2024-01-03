@@ -19,7 +19,6 @@ function get_multiple_select_value(objSelectId) {
 function selectOnchang(obj) {
 //获取被选中的option标签选项
     var value = obj.options[obj.selectedIndex].value;
-//alert(value);
 }
 
 

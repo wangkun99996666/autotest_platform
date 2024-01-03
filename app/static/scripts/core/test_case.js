@@ -8,25 +8,85 @@ function submitAddForm() {
     });
 }
 
+function searchProjectName() {
+    var project_name = $('#selectProject').val();
+    $.ajax({
+        url: "/search_project_name",
+        method: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify({"projectName": project_name}),
+        success: function (data) {
+            var name = data.projectName;
+            var selectElement = $('#selectProject');
+            if (name === 't') {
+                //    处理无项目情况
+            } else {
+                // 多个项目返回数组
+                if ((name.indexOf(", ")) !== -1) {
+                    var arr = name.split(', ');
+                    var op = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        op[i] = {value: arr[i], text: arr[i]};
+                    }
+                    // 遍历选项数据，创建并添加 option 元素
+                    $.each(op, function (index, option) {
+                        // 使用 append 方法添加 option 元素
+                        selectElement.append($('<option>', {
+                            value: option.value,
+                            text: option.text
+                        }));
+                    });
+                } else { // 单一项目情况
+                    selectElement.append($('<option>', {
+                        value: name,
+                        text: name
+                    }));
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            window.alert("请求出错....");
+        }
+    });
+}
+
+function searchModuleName() {
+    var project_name = $('#selectProject').val();
+    var module_name = $('#selectModule').val();
+    var selectElement = $('#selectModule');
+    $.ajax({
+        url: "/search_module_name",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({projectName: project_name.toString(), module_name: module_name}),
+        success: function (data) {
+            if (data.code == "200"){
+                var op = [];
+                for (var i = 0; i < data.message.length; i++) {
+                    op[i]=data.message[i].name;
+                }
+                $.each(op, function (index, option){
+                    selectElement.append($("<option>",{
+                        value: op[index],
+                        text: op[index]
+                    }));
+                });
+            }
+        }
+    });
+}
 
 $(function () {
 
     //1.初始化Table
     var oTable = new TableInit();
     oTable.Init();
-
+    searchProjectName();
+    searchModuleName();
 
 });
-
-function get_test_case_detail(id) {
-    $.ajax({
-        url: '/test_case.json',
-        method: 'get',
-        data: {'id': id},
-        success: success,
-        dataType: dataType
-    });
-}
 
 var TableInit = function () {
     var oTableInit = new Object();
@@ -62,6 +122,9 @@ var TableInit = function () {
             }, {
                 field: 'id',
                 title: 'id'
+            },{
+                field: 'project',
+                title: '项目'
             }, {
                 field: 'module',
                 title: '模块'
@@ -92,16 +155,6 @@ var TableInit = function () {
         });
     };
 
-    function edit(index) {
-        window.location.href = ('/edit_test_case?id=' + index);
-    }
-
-    function operateFormatter(value, row, index) {
-        return [
-            '<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>',
-            '<button type="button" class="RoleOfDelete btn btn-default  btn-sm" style="margin-right:15px;">删除</button>'
-        ].join('');
-    }
 
     window.operateEvents = {
         'click .RoleOfEdit': function (e, value, row, index) {
@@ -110,7 +163,7 @@ var TableInit = function () {
         'click .RoleOfDelete': function (e, value, row, index) {
             alert("B");
         }
-    }
+    };
 
 
     //得到查询的参数
@@ -118,7 +171,7 @@ var TableInit = function () {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             limit: params.limit,   //页面大小
             offset: params.offset,  //页码
-            name: $("#name").val(),
+            projectName: $("#selectProject").val(),
             module: $("#selectModule").val(),
             type: "test_cases"
         };
@@ -129,7 +182,6 @@ var TableInit = function () {
 
 
 function searchTestCase(test_case_id) {
-//    alert(1)
     var $tb_departments = $('#tb_test_cases');
     $tb_departments.bootstrapTable('refresh', {url: '/test_case.json', data: {id: test_case_id, type: "test_case"}});
 }
@@ -137,12 +189,10 @@ function searchTestCase(test_case_id) {
 
 // 编辑表单
 function get_edit_info(active_id) {
-//    alert(active_id)
     if (!active_id) {
         alert('Error！');
         return false;
     }
-    // var form_data = new Array();
 
     $.ajax(
         {
@@ -184,7 +234,6 @@ function get_edit_info(active_id) {
                 alert('请求出错');
             },
             complete: function () {
-                // $('#tips').hide();
             }
         });
 
@@ -481,7 +530,7 @@ function selectOptions(options, defaultOption) {
         if (options[i] == defaultOption) {
             option.setAttribute("selected", "true");
         }
-        select.appendChild(option)
+        select.appendChild(option);
     }
     return select;
 }
@@ -501,7 +550,6 @@ function keywordOption() {
                 return true;
             },
             success: function (data) {
-//        alert(data.rows);
                 options = data.rows;
 
             },
@@ -536,7 +584,6 @@ function getPublicFunctions() {
                 alert('请求出错');
             },
             complete: function () {
-                // $('#tips').hide();
             }
         });
     return cases;
@@ -545,7 +592,6 @@ function getPublicFunctions() {
 
 function addRow(ojb) {
     var n = ojb.parentNode.parentNode.rowIndex + 1;
-//    alert(n);
     var options = keywordOption();
     addBody('', n, options, 1);
 }
@@ -583,9 +629,7 @@ function changeValue(obj, order) {
         }
 
     } else if (keyword == '公共方法') {
-//    changeBy(keyword,order);
         var publicSelect = method.getElementsByClassName('method');
-//        alert(methodSelect.length);
         var publicFuntions = getPublicFunctions();
         if (publicSelect.length == 0) {
             var select = selectOptions(publicFuntions, publicFuntions[0]);
