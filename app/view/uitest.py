@@ -26,7 +26,7 @@ def test_cases():
 def save_new_test_case():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         return render_template("uitest/new_test_cases.html")
     if request.method == 'POST':
         info = request.form
