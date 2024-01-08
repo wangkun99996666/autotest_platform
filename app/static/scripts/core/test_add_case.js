@@ -13,7 +13,6 @@ function getProjectName(name) {
             } else {
                 var nameList = response.projectName.split(", ");
                 for (var i = 0; i < nameList.length; i++) {
-                    // projectArr.set('普通用例', [{txt: nameList[i], val: nameList[i]}]);
                     temp.push({txt: nameList[i], val: nameList[i]});
                     projectArr.set(name, temp);
                 }
@@ -33,9 +32,9 @@ function getModuleName(name) {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({}),
         success: function (response) {
-            if (response.code == 200){
+            if (response.code == 200) {
                 for (var i = 0; i < response.message.length; i++) {
-                    temp.push({txt: response.message[i]['name'], val: typeof(response.message[i]['name'])});
+                    temp.push({txt: response.message[i]['name'], val: response.message[i]['name']});
                 }
                 moduleArr.set(name, temp);
             }
@@ -92,7 +91,7 @@ function removeOptions(selectObj) {
 
 //添加测试用例时使用
 var moduleArr = new Map();
-moduleArr.set('公共用例',{txt: 'public', val: 'public'});
+moduleArr.set('公共用例', {txt: 'public', val: 'public'});
 moduleArr.set('普通用例', [{}]);
 var projectArr = new Map();
 projectArr.set('public', [{txt: '公共用例', val: '公共用例'}]);
@@ -104,7 +103,33 @@ function setProjectAndModule(type) {
 }
 
 function submitAddForm() {
-    $("#new_test_case").validate();
+    $("#new_test_case").validate({
+        rules: {
+            project: {
+                required: true
+            },
+            module: {
+                required: true
+            }
+        },
+        messages: {
+            project: {
+                required: '请选择项目'
+            },
+            module: {
+                required: '请选择模块'
+            },
+            name: {
+                required: '请输入用例名称'
+            },
+            steps: {
+                required: '请输入用例步骤'
+            },
+            description: {
+                required: '请输入用例描述'
+            }
+        },
+    });
     $.validator.setDefaults({
         submitHandler: function () {
             document.getElementById("new_test_case").submit();
@@ -128,12 +153,12 @@ function openEditStepWindow() {
     var steprows = steps.length;
 
     for (var i = 0; i < steprows; i++) {
-        addBody(steps[i], i + 1, options, 0);
+        addBody(steps[i], i, options, 0);
     }
 }
 
 function keywordOption() {
-
+// 新增测试用例关键字选项
     var options = [];
 
     $.ajax(
@@ -142,24 +167,22 @@ function keywordOption() {
             type: "get",
             dataType: "json",
             async: false,
-            beforeSend: function () {
-                return true;
-            },
             success: function (data) {
                 options = data.rows;
-
             },
             error: function () {
                 window.alert('请求出错');
             },
-            complete: function () {
-            }
         });
     return options;
 }
 
 function addBody(content, order, options, isInsert) {
-
+    // 新建用例时，创建新建用例页面下方的表格
+    // insert为1表示插入
+    // order顺序
+    // options 数组格式，从数据库获取['', '']
+    // content 新建用例页面中填写的用例内容
     var tbody = document.getElementsByTagName('tbody')[0];
     var tr = '';
     if (isInsert == 1) {
@@ -203,9 +226,10 @@ function addBody(content, order, options, isInsert) {
     var tdvalue = document.createElement('td');
     var select = selectOptions(options, words[0]);
     select.setAttribute("id", "td_keyword_" + order);
+    select.setAttribute("style", "width: 100%;");
     select.setAttribute("onchange", "if(this.value != '') changeValue(this,'" + order + "');");
     tdvalue.appendChild(select);
-    tdvalue.setAttribute("onchange", "change(this," + order + ");");
+    tdvalue.setAttribute("onchange", "change(this,'" + order + "');");
 //    $("#td_keyword_"+order).find("option[value='"+words[0]+"']").attr("selected",true);
     tr.appendChild(tdvalue);
     if (words.length == 1) {
@@ -254,13 +278,14 @@ function addBody(content, order, options, isInsert) {
 }
 
 function selectOptions(options, defaultOption) {
+    // 创建select--option下拉框， 当提供defaultOption时，默认选中该项
     var select = document.createElement('select');
     for (var i = 0; i < options.length; i++) {
         var option = document.createElement('option');
         option.value = options[i];
         option.text = options[i];
         if (options[i] == defaultOption) {
-            option.setAttribute("selected", "true");
+            option.setAttribute("selected", "selected");
         }
         select.appendChild(option);
     }
@@ -331,8 +356,16 @@ function changeValue(obj, order) {
             method.textContent = '';
             method.appendChild(select);
         }
-
-    } else if (keyword == '公共方法') {
+        else if (methodSelect.length == 1 && methodSelect[0].innerText == '') {
+            method.removeChild(methodSelect[0]);
+            select = selectOptions(['id', 'name', 'class', 'xpath', 'text', 'css'], 'id');
+            select.setAttribute('onchange', 'change(this,"' + order + '");');
+            select.setAttribute("class", "method");
+            method.textContent = '';
+            method.appendChild(select);
+        }
+    }
+    else if (keyword == '公共方法') {
         var publicSelect = method.getElementsByClassName('method');
         var publicFuntions = getPublicFunctions();
         if (publicSelect.length == 0) {
@@ -341,8 +374,9 @@ function changeValue(obj, order) {
             select.setAttribute("class", "method");
             method.textContent = '';
             method.appendChild(select);
-        }
-    } else {
+        } // todo: 这里可以增强
+    }
+    else {
         methodSelect = method.getElementsByClassName('method');
         if (methodSelect.length == 1) {
             method.removeChild(methodSelect[0]);
@@ -379,16 +413,17 @@ function getPublicFunctions() {
 }
 
 function change(obj, order) {
-    console.log('-->'+obj.textContent+'--<');
+    // console.log('-->'+obj.textContent+'--<');
     var content = document.getElementById('td_content_' + order);
     var keyword = document.getElementById('td_keyword_' + order);
     var paras = document.getElementsByClassName("td_para_" + order);
     var newvalue = keyword.options[keyword.selectedIndex].value;
-    var methodSelect = paras[0].getElementsByClassName('method');
-    var method ;
-    if (methodSelect.length == 1) {
+    var methodSelect = paras[0].getElementsByClassName('method');  //页面中参数1单元格
+    var method;
+    if (methodSelect.length == 1 && methodSelect[0].innerText != '') {  // 后面的判断防止公共方法为空的情况，导致出错
         method = methodSelect[0].options[methodSelect[0].selectedIndex].value;
-    } else {
+    }
+    else {
         method = paras[0].textContent;
     }
     if (method != '') {
@@ -402,4 +437,58 @@ function change(obj, order) {
     }
 
     content.innerHTML = newvalue;
+}
+
+// 编辑表单
+function get_edit_info(active_id) {
+    if (!active_id) {
+        window.alert('Error！');
+        return false;
+    }
+
+    $.ajax(
+        {
+            url: "/test_case.json",
+            data: {"id": active_id, "type": "test_case"},
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    // 解析json数据
+                    var data = data;
+                    var data_obj = data.rows;
+
+                    // 赋值
+                    $("#id").val(active_id);
+                    $("#name").val(data_obj.name);
+                    $("#steps").val(data_obj.steps);
+                    $("#description").val(data_obj.description);
+                    $("#type").val(data_obj.isPublic);
+                    var isPublic = data_obj.isPublic;
+                    if (isPublic == 1) {
+                        $("#type").val('公共用例');
+                        setModule('公共用例');
+                    } else {
+                        $("#type").val('普通用例');
+                        setModule('普通用例');
+                    }
+
+                } else {
+                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
+                    // alert('操作失败');
+                }
+            },
+            error: function () {
+                alert('请求出错');
+            },
+            complete: function () {
+            }
+        });
+
+    return false;
+}
+
+function setModule(type)
+{
+ setSelectOption('module', moduleArr.get(type), '-请选择-');
 }

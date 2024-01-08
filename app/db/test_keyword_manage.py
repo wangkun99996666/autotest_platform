@@ -60,7 +60,6 @@ class test_keyword_manage:
         results = []
         sql = 'select keyword from test_keyword where status = 1 order by keyword ;'
         cases = useDB.useDB().search(sql)
-        # print(cases)
         log.log().logger.info('cases : %s' % cases)
         for i in range(len(cases)):
             results.append(cases[i][0])

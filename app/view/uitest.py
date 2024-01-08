@@ -30,12 +30,11 @@ def save_new_test_case():
         return render_template("uitest/new_test_cases.html")
     if request.method == 'POST':
         info = request.form
-        log.log().logger.info('info : %s' % info)
-        name = viewutil.getInfoAttribute(info, 'name')
+        project = info.get('project',)
         module = viewutil.getInfoAttribute(info, 'module')
+        name = viewutil.getInfoAttribute(info, 'name')
         description = viewutil.getInfoAttribute(info, 'description')
         steps = viewutil.getInfoAttribute(info, 'steps')
-        log.log().logger.info("steps: %s" % steps)
         steps = steps.replace('"', "'")
         log.log().logger.info("steps: %s" % steps)
         type = viewutil.getInfoAttribute(info, 'type')
@@ -46,8 +45,11 @@ def save_new_test_case():
                 isPublic = 1
             else:
                 isPublic = 0
-            test_case_manage.test_case_manage().new_test_case(module, name, steps, description, isPublic)
-        return redirect('test_cases')
+            result = test_case_manage.test_case_manage().new_test_case(project, module, name, steps, description, isPublic)
+        if result:
+            return redirect('/test_cases')
+        else:
+            return jsonify({"code": 201, "message": "添加用例失败"})
 
 
 @mod.route('/edit_test_case', methods=['POST', 'GET'])
@@ -67,6 +69,7 @@ def edit_test_case():
         id = viewutil.getInfoAttribute(info, 'id')
         name = viewutil.getInfoAttribute(info, 'name')
         module = viewutil.getInfoAttribute(info, 'module')
+        project = viewutil.getInfoAttribute(info, 'project')
         description = viewutil.getInfoAttribute(info, 'description')
         steps = viewutil.getInfoAttribute(info, 'steps')
         log.log().logger.info("steps: %s" % steps)
@@ -80,9 +83,9 @@ def edit_test_case():
                 isPublic = 1
             else:
                 isPublic = 0
-            test_case_manage.test_case_manage().update_test_case(id, ['module', 'name', 'steps', 'description',
+            test_case_manage.test_case_manage().update_test_case(id, ['project', 'module', 'name', 'steps', 'description',
                                                                       'isPublicFunction'],
-                                                                 [module, name, steps, description, isPublic])
+                                                                 [project, module, name, steps, description, isPublic])
             return render_template("uitest/test_batch2.html", id=id, type='test_suite')
 
 
@@ -191,10 +194,10 @@ def search_test_cases():
         name = viewutil.getInfoAttribute(info, 'name')
         conditionList = ['name']
         valueList = [name]
-        if 'All' not in project:  # 如何是All 说明不需要在后续的where 子句中加条件
+        if 'All' not in project and id == '':  # 如何是All 说明不需要在后续的where 子句中加条件, id 等于空判断确定不是编辑测试用例操作
             conditionList.append('project')
             valueList.append(project)
-        if 'All' not in module:  # 如何是All 说明不需要在后续的where 子句中加条件
+        if 'All' not in module and id == '':  # 如何是All 说明不需要在后续的where 子句中加条件， id 等于空判断确定不是编辑测试用例操作
             conditionList.append('module')
             valueList.append(module)
         if type.lower() == 'unattach' and 'public' in module:
@@ -205,10 +208,9 @@ def search_test_cases():
                 valueList.append(module)
             log.log().logger.info('info content: id- %s, module - %s, name - %s, type - %s' % (id, module, name, type))
         else:
-            conditionList = ['id']
+            conditionList = ['id']  # 确定是编辑测试用例操作
             valueList = [id]
             log.log().logger.info('info content: id- %s, module - %s, name - %s, type - %s' % (id, module, name, type))
-        # else:
         fieldlist = []
         rows = 1000
         if type == 'unattach':

@@ -100,8 +100,9 @@ class mysqlDB(object):
             cursor.execute(sql)
             cursor.close()
             conn.commit()
-        except:
+        except Exception as e:
             log.log().logger.error('commit error--->' + str(sql))
+            log.log().logger.error(str(e))
             return False
         finally:
             if cursor:
@@ -150,9 +151,9 @@ class useDB(object):
 
     def insert(self, sql):
         if self.DBtype == '1':
-            sqliteDB().insert(sql)
+            return sqliteDB().insert(sql)
         else:
-            mysqlDB().insert(sql)
+            return mysqlDB().insert(sql)
 
     def search(self, sql):
         if self.DBtype == '1':

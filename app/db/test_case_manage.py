@@ -7,12 +7,10 @@ class test_case_manage:
         self.status = 0
         self.name = ''
 
-    def new_test_case(self, module, name, steps, description, isPublic):
+    def new_test_case(self, project, module, name, steps, description, isPublic):
         steps = str(steps).replace('\\', '\\\\')
-        sql = string.Template(
-            'insert into test_case (module,name,steps,description,isPublicFunction) values ("$module","$name","$steps","$description",$isPublic);')
-        sql = sql.substitute(name=name, module=module, steps=steps, description=description, isPublic=isPublic)
-        useDB.useDB().insert(sql)
+        sql = f'INSERT INTO test_case ( `name`, steps, description, `status`, isPublicFunction, module_id, project_id )SELECT "{name}", "{steps}", "{description}", 1, {isPublic}, m.id module_id, p.id project_id FROM module m INNER JOIN project p ON m.project_id = p.id WHERE m.module_name = "{module}" ;'
+        return useDB.useDB().insert(sql)
 
     def copy_test_case(self, id):
         # module, name, steps, description, isPublic
@@ -36,9 +34,21 @@ class test_case_manage:
             if fieldlist[i] == 'steps':
                 valueList[i] = valueList[i].replace('\\', '\\\\')
             update_value += ', %s = "%s"' % (fieldlist[i], valueList[i])
-        sql = string.Template('update test_case set $field where id = "$id";')
-        sql = sql.substitute(field=update_value, id=id)
+        input_string = update_value.replace(" ", "")
+        key_value_pairs = input_string.split(",")
+        result_dict = {}
+        for pair in key_value_pairs:
+            key, value = pair.split("=")
+            result_dict[key] = value
+        result_dict.pop("project")
+        result_dict.pop("module")
+        output_string = ', '.join([f'{key}={value}' for key, value in result_dict.items()])
+        # sql = string.Template('update test_case set $field where id = "$id";')
+        sql = string.Template('UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
+        sql = sql.substitute(field=output_string, id=id)
         useDB.useDB().insert(sql)
+        # sql = sql.substitute(field=update_value, id=id)
+        # useDB.useDB().insert(sql)
 
     def search_test_case(self, idList, fieldlist):
         id_value = str(idList[0])
@@ -68,7 +78,7 @@ class test_case_manage:
         :param valueList: where 子句中的值
         :param fieldlist: 需要显示的列明
         """
-        if len(fieldlist) == 0:  # 首次进入测试用例页面
+        if len(fieldlist) == 0:  # 首次进入测试用例页面 or 编辑测试用例页面
             fieldlist = ['id', 'project', 'module', 'name', 'steps', 'description', 'isPublicFunction']
         # search_value 是select 查询语句后要显示的列明
         search_value = ''
@@ -97,7 +107,10 @@ class test_case_manage:
                     # condition += str(conditionList[i]) + ' in (' + str(moduleList) + ')'
                     pass
                 else:
-                    condition += str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
+                    if conditionList[i] == 'id': # id前需加表别名t
+                        condition += str('t.' + conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
+                    else:
+                        condition += str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
             else:
                 if conditionList[i] == 'module':
                     moduleList = ''
