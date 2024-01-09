@@ -10,7 +10,7 @@ def main():
     :return:
     """
 
-    idList = test_task_manage.test_task_manage().test_suite_list()
+    idList = test_task_manage.test_task_manage().test_suite_list()  # 查询测试用例集
     if len(idList):
         for caselist in idList:
             test_suite_id = caselist[0]
@@ -22,7 +22,7 @@ def main():
         result1 = 0
     else:
         result1 = 1
-    idList1 = test_task_manage.test_task_manage().test_case_list()
+    idList1 = test_task_manage.test_task_manage().test_case_list()  # 查询测试用例
     if len(idList1):
         threadNum = 6
         process.process().multipleRun(idList1, threadNum)

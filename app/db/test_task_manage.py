@@ -4,15 +4,17 @@ from app.db import test_batch_manage
 
 class test_task_manage():
     def test_suite_list(self, runtype='2'):
+        # 0:待执行；1：执行成功；2：执行失败 3：执行中
         sql = 'select id,run_type from test_suite where status in (0,2) and isDeleted = 0 and run_type = "%s";' % runtype
         idList = useDB.useDB().search(sql)
         return idList
 
     def test_case_list(self, isATX=False):
+        # status 0:待执行；1：执行成功；2：执行失败 3：执行中
         if isATX:
-            sql = 'select t1.id, t1.steps,t1.browser_type from test_batch t1, test_case t2 where t1.status in (0) and t1.test_case_id=t2.id and t2.module="android";'
+            sql = 'select t1.id, t1.steps,t1.browser_type from test_batch t1, test_case t2 where t1.status in (0) and t1.test_case_id=t2.id and t2.module="android" ;'
         else:
-            sql = 'select t1.id, t1.steps,t1.browser_type from test_batch t1, test_case t2 where t1.status in (0) and t1.test_case_id=t2.id and t2.module !="android";'
+            sql = 'SELECT t1.id,t1.steps,t1.browser_type FROM test_batch t1 INNER JOIN test_case t2 ON t1.test_case_id=t2.id INNER JOIN module m ON t2.module_id=m.id WHERE m.module_name !="android" AND t1.`status`=0;'
         idList = useDB.useDB().search(sql)
         return idList
 

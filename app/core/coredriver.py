@@ -46,19 +46,15 @@ class coredriver():
                     chrome_option['mobileEmulation']['deviceName'] = devicename
                 else:
                     chrome_option = Options()
-                    # chrome_option = {
-                    #     'args': ['lang=en_US', '--start-maximized'],
-                    #     'extensions': []
-                    # }
                     chrome_option.set_capability('browserVersion', '120.0')
                     chrome_option.add_argument("--start-maximized")
-                desired_caps_web['goog:chromeOptions'] = chrome_option
+                # desired_caps_web['goog:chromeOptions'] = chrome_option
             elif runType == 'Firefox':
                 desired_caps_web = webdriver.DesiredCapabilities.FIREFOX.copy()
             else:
                 log.log().logger.error("browser not support! %s " % runType)
                 return 0
-            log.log().logger.debug(desired_caps_web)
+            # log.log().logger.debug(desired_caps_web)
             retry = 2
             while retry:
                 try:

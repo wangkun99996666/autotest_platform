@@ -18,10 +18,10 @@ class test_case_manage:
         if len(result):
             result = result[0]
             sql = string.Template(
-                'insert into test_case (module,name,steps,description,isPublicFunction) values ("$module","$name","$steps","$description",$isPublic);')
+                'INSERT INTO test_case (project_id,module_id,name,steps,description,isPublicFunction) SELECT p.id, m.id, "${name}", "${steps}", "${description}", ${isPublic} FROM module m  JOIN project p ON m.project_id = p.id WHERE p.project_name = "${project}" AND m.module_name = "${module}" ;')
             sql = sql.substitute(name=result['name'], module=result['module'],
                                  steps=result['steps'].replace('\\', '\\\\'), description=result['description'],
-                                 isPublic=result['isPublic'])
+                                 isPublic=result['isPublic'], project=result['project'])
             useDB.useDB().insert(sql)
             result = 1
         else:
@@ -34,18 +34,12 @@ class test_case_manage:
             if fieldlist[i] == 'steps':
                 valueList[i] = valueList[i].replace('\\', '\\\\')
             update_value += ', %s = "%s"' % (fieldlist[i], valueList[i])
-        input_string = update_value.replace(" ", "")
-        key_value_pairs = input_string.split(",")
-        result_dict = {}
-        for pair in key_value_pairs:
-            key, value = pair.split("=")
-            result_dict[key] = value
-        result_dict.pop("project")
-        result_dict.pop("module")
-        output_string = ', '.join([f'{key}={value}' for key, value in result_dict.items()])
-        # sql = string.Template('update test_case set $field where id = "$id";')
+        strings_to_remove = ['project = "测试项目名称", ', 'module = "模块一", ']
+        result_string = update_value
+        for string_to_remove in strings_to_remove:
+            result_string = result_string.replace(string_to_remove, '')
         sql = string.Template('UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
-        sql = sql.substitute(field=output_string, id=id)
+        sql = sql.substitute(field=result_string, id=id)
         useDB.useDB().insert(sql)
         # sql = sql.substitute(field=update_value, id=id)
         # useDB.useDB().insert(sql)

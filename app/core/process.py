@@ -24,7 +24,7 @@ class process():
         """
         result = 1
         id = case[0]
-        test_batch_manage.test_batch_manage().set_test_running(id, deviceList)
+        test_batch_manage.test_batch_manage().set_test_running(id, deviceList) # 设置执行状态为执行中
         browserType = case[2]
         case = case[1]
         screenFileList = []

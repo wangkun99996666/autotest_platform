@@ -57,7 +57,7 @@ def save_new_test_case():
 def edit_test_case():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         info = request.values
         log.log().logger.info('info : %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
@@ -65,16 +65,13 @@ def edit_test_case():
         return render_template("uitest/edit_test_cases2.html", id=id)
     if request.method == 'POST':
         info = request.form
-        log.log().logger.info('info : %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
         name = viewutil.getInfoAttribute(info, 'name')
         module = viewutil.getInfoAttribute(info, 'module')
         project = viewutil.getInfoAttribute(info, 'project')
         description = viewutil.getInfoAttribute(info, 'description')
         steps = viewutil.getInfoAttribute(info, 'steps')
-        log.log().logger.info("steps: %s" % steps)
         steps = steps.replace('"', "'")
-        log.log().logger.info("steps: %s" % steps)
         type = viewutil.getInfoAttribute(info, 'type')
         if module == '' or name == '' or steps == '' or type == '':
             return '必填字段不得为空！'
@@ -96,14 +93,13 @@ def copy_test_case():
     log.log().logger.info(request.method)
     # log.log().logger.info(request.value)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         result = jsonify({'code': 500, 'msg': 'should be get!'})
         return result
     if request.method == 'POST':
+        log.log().logger.info('post')
         info = request.form
-        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
-        log.log().logger.info(id)
         if id == '':
             result = jsonify({'code': 500, 'msg': 'test case is not found!'})
         else:
@@ -156,7 +152,7 @@ def copy_test_suite():
 def delete_test_case():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         info = request.values
         log.log().logger.info('info : %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
@@ -597,8 +593,6 @@ def runtest():
         result = jsonify({'code': 500, 'msg': 'should be get!'})
         return result
     else:
-        log.log().logger.info(request.values)
-        # log.log().logger.info(request.form)
         info = request.values
         id = viewutil.getInfoAttribute(info, 'id')
         test_case_id = viewutil.getInfoAttribute(info, 'test_case_id')
@@ -622,7 +616,6 @@ def runtest():
             test_batch_manage.test_batch_manage().rerun_test_batch(id, 'part')
             result = jsonify({'code': 200, 'msg': 'success!'})
         elif type == 'test_batch':
-            # test_suite_manage.test_suite_manage().new_test_run_list(id)
             test_batch_manage.test_batch_manage().rerun_test_batch_record(id, test_case_id)
             result = jsonify({'code': 200, 'msg': 'success!'})
         elif type == 'test_case':
