@@ -24,22 +24,22 @@
             <div class="panel-body">
                 <form id="formSearch" class="form-horizontal">
                     <div class="form-group" style="margin-top:15px">
-                        <label class="control-label col-sm-1" for="name">执行状态</label>
+                        <label class="control-label col-sm-1" for="selectStatus">执行状态</label>
                         <div class="col-sm-2">
                             <select class="form-control" onchange="selectOnchang(this)" id="selectStatus">
-                                <option value="">-请选择-</option>
+                                <option value="All">-All-</option>
                                 <option value="-1">未执行</option>
                                 <option value="0">0-准备执行</option>
                                 <option value="1">1-执行完成</option>
                                 <option value="2">2-执行中</option>
                             </select>
                         </div>
-                        <label class="control-label col-sm-1" for="name">执行类型</label>
+                        <label class="control-label col-sm-1" for="run_type">执行类型</label>
                         <div class="col-sm-2">
                             <select class="form-control" onchange="selectOnchang(this)" id="run_type">
-                                <option value="">-请选择-</option>
-                                <option value="Android">Android</option>
-                                <option value="iOS">iOS</option>
+                                <option value="All">-All-</option>
+{#                                <option value="Android">Android</option>#}
+{#                                <option value="iOS">iOS</option>#}
                                 <option value="Chrome">Chrome</option>
                             </select>
                         </div>
@@ -47,7 +47,18 @@
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="name" size="20">
                         </div>
-
+                        <label class="control-label col-sm-1" for="project">项目名称</label>
+                        <div class="col-sm-2">
+                            <select class="form-control" onchange="selectOnchang(this)" id="project">
+                                <option value="All">-All-</option>
+                            </select>
+                        </div>
+                        <label class="control-label col-sm-1" for="module">模块名称</label>
+                        <div class="col-sm-2">
+                            <select class="form-control" onchange="selectOnchang(this)" id="module">
+                                <option value="All">-All-</option>
+                            </select>
+                        </div>
                         <div class="col-sm-2" style="text-align:left;">
                             <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary"
                                     onclick="searchTestSuite()">查询

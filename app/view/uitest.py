@@ -30,7 +30,7 @@ def save_new_test_case():
         return render_template("uitest/new_test_cases.html")
     if request.method == 'POST':
         info = request.form
-        project = info.get('project',)
+        project = info.get('project', )
         module = viewutil.getInfoAttribute(info, 'module')
         name = viewutil.getInfoAttribute(info, 'name')
         description = viewutil.getInfoAttribute(info, 'description')
@@ -45,7 +45,8 @@ def save_new_test_case():
                 isPublic = 1
             else:
                 isPublic = 0
-            result = test_case_manage.test_case_manage().new_test_case(project, module, name, steps, description, isPublic)
+            result = test_case_manage.test_case_manage().new_test_case(project, module, name, steps, description,
+                                                                       isPublic)
         if result:
             return redirect('/test_cases')
         else:
@@ -80,8 +81,9 @@ def edit_test_case():
                 isPublic = 1
             else:
                 isPublic = 0
-            test_case_manage.test_case_manage().update_test_case(id, ['project', 'module', 'name', 'steps', 'description',
-                                                                      'isPublicFunction'],
+            test_case_manage.test_case_manage().update_test_case(id,
+                                                                 ['project', 'module', 'name', 'steps', 'description',
+                                                                  'isPublicFunction'],
                                                                  [project, module, name, steps, description, isPublic])
             return render_template("uitest/test_batch2.html", id=id, type='test_suite')
 
@@ -231,23 +233,26 @@ def search_test_suite():
         log.log().logger.info('post')
     if request.method == 'GET':
         info = request.values
-        log.log().logger.info('info : %s' % info)
         limit = info.get('limit', 10)  # 每页显示的条数
         offset = info.get('offset', 0)  # 分片数，(页码-1)*limit，它表示一段数据的起点
-        log.log().logger.info('get %s' % limit)
-        log.log().logger.info('get  offset %s' % offset)
         id = viewutil.getInfoAttribute(info, 'id')
         type = viewutil.getInfoAttribute(info, 'type')
-        log.log().logger.info('type %s' % type)
         run_type = viewutil.getInfoAttribute(info, 'run_type')
         status = viewutil.getInfoAttribute(info, 'status')
         name = viewutil.getInfoAttribute(info, 'name')
+        project = viewutil.getInfoAttribute(info, 'project')
+        module = viewutil.getInfoAttribute(info, 'module')
         if id == '':
             if status == 'All':
                 status = ''
-            log.log().logger.info('info content: %s, %s, %s, %s' % (id, status, run_type, name))
-            conditionList = ['status', 'run_type', 'name']
-            valueList = [status, run_type, name]
+            if run_type == 'All':
+                run_type = ''
+            if project == 'All':
+                project = ''
+            if module == 'All':
+                module = ''
+            conditionList = ['status', 'run_type', 'name', 'project', 'module']
+            valueList = [status, run_type, name, project, module]
         else:
             if type == 'testview':
                 statusList = test_batch_manage.test_batch_manage().show_test_batch_status(id)
@@ -274,13 +279,14 @@ def search_test_suite():
 def save_new_test_suite():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         return render_template("uitest/new_test_suite.html")
     if request.method == 'POST':
-        info = request.values
-        log.log().logger.info('info :%s' % info)
+        info = request.json
         name = viewutil.getInfoAttribute(info, 'name')
         run_type = viewutil.getInfoAttribute(info, 'run_type')
+        project = viewutil.getInfoAttribute(info, 'project')
+        module = viewutil.getInfoAttribute(info, 'module')
         description = viewutil.getInfoAttribute(info, 'description')
         if run_type == '' or name == '':
             message = '必填字段不得为空！'
@@ -288,7 +294,7 @@ def save_new_test_suite():
         else:
             import random, time
             batchId = str(random.randint(10000, 99999)) + str(time.time())
-            test_suite_manage.test_suite_manage().new_test_suite(name, run_type, description, batchId)
+            test_suite_manage.test_suite_manage().new_test_suite(project, module, name, run_type, description, batchId)
             newId = test_suite_manage.test_suite_manage().show_test_suites(["batchId"], [batchId], ['id'], 1)
             log.log().logger.info('newid %s' % newId)
             if len(newId):

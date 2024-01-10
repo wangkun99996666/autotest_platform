@@ -1,24 +1,78 @@
-// submit form
-//function submitAddForm() {
-//   $("#new_test_suite").validate();
-//   $.validator.setDefaults({
-//        submitHandler: function() {
-//            document.getElementById("new_test_suite").submit();
-//    }
-//});
-//   }
+function searchProjectName() {
+    var project_name = $('#selectProject').val();
+    $.ajax({
+        url: "/search_project_name",
+        method: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify({"projectName": project_name}),
+        success: function (data) {
+            var name = data.projectName;
+            var selectElement = $('#selectProject');
+            if (name === 't') {
+                //    处理无项目情况
+            } else {
+                // 多个项目返回数组
+                if ((name.indexOf(", ")) !== -1) {
+                    var arr = name.split(', ');
+                    var op = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        op[i] = {value: arr[i], text: arr[i]};
+                    }
+                    // 遍历选项数据，创建并添加 option 元素
+                    $.each(op, function (index, option) {
+                        // 使用 append 方法添加 option 元素
+                        selectElement.append($('<option>', {
+                            value: option.value,
+                            text: option.text
+                        }));
+                    });
+                } else { // 单一项目情况
+                    selectElement.append($('<option>', {
+                        value: name,
+                        text: name
+                    }));
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            window.alert("请求出错....");
+        }
+    });
+}
 
+function searchModuleName() {
+    var project_name = $('#selectProject').val();
+    var module_name = $('#selectModule').val();
+    var selectElement = $('#selectModule');
+    $.ajax({
+        url: "/search_module_name",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({projectName: project_name, module_name: module_name}),
+        success: function (data) {
+            if (data.code == "200") {
+                var op = [];
+                for (var i = 0; i < data.message.length; i++) {
+                    op[i] = data.message[i].name;
+                }
+                $.each(op, function (index, option) {
+                    selectElement.append($("<option>", {
+                        value: op[index],
+                        text: op[index]
+                    }));
+                });
+            }
+        }
+    });
+}
 
 $(function () {
 
     //1.初始化Table
     var oTable = new TableInit();
     oTable.Init();
-
-//    //2.初始化Button的点击事件
-//    var oButtonInit = new ButtonInit();
-//    oButtonInit.Init();
-
 });
 
 function get_test_suite_detail(id) {
@@ -66,6 +120,12 @@ var TableInit = function () {
                 field: 'id',
                 title: 'id'
             }, {
+                field: 'project',
+                title: '项目名称'
+            }, {
+                field: 'module',
+                title: '模块名称'
+            }, {
                 field: 'status',
                 title: '状态'
             }, {
@@ -96,27 +156,6 @@ var TableInit = function () {
         });
     };
 
-    function edit(index) {
-        window.location.href = ('/edit_test_suite?id=' + index);
-    }
-
-    function operateFormatter(value, row, index) {
-        return [
-            '<button type="button" class="RoleOfEdit btn btn-default  btn-sm" style="margin-right:15px;">编辑</button>',
-            '<button type="button" class="RoleOfDelete btn btn-default  btn-sm" style="margin-right:15px;">删除</button>'
-        ].join('');
-    }
-
-    window.operateEvents = {
-        'click .RoleOfEdit': function (e, value, row, index) {
-//                window.location.href=('/add_test_suite');
-        },
-        'click .RoleOfDelete': function (e, value, row, index) {
-            alert("B");
-        }
-    }
-
-
     //得到查询的参数
     oTableInit.queryParams = function (params) {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
@@ -124,36 +163,20 @@ var TableInit = function () {
             offset: params.offset,  //页码
             name: $("#name").val(),
             status: $("#selectStatus").val(),
-            run_type: $("#run_type").val()
+            run_type: $("#run_type").val(),
+            project: $("#project").val(),
+            module: $("#module").val()
         };
         return temp;
     };
     return oTableInit;
 };
 
-//
-//var ButtonInit = function () {
-//    var oInit = new Object();
-//    var postdata = {};
-//
-//    oInit.Init = function () {
-//        //初始化页面上面的按钮事件
-//    };
-//
-//    return oInit;
-//};
 
 function searchTestSuite() {
     var $tb_departments = $('#tb_test_suites');
     $tb_departments.bootstrapTable('refresh', {url: '/test_suite.json'});
 }
-
-//
-//function selectOnchang(obj){
-////获取被选中的option标签选项
-//var value = obj.options[obj.selectedIndex].value;
-////alert(value);
-//}
 
 
 // 编辑表单
@@ -244,41 +267,6 @@ function delete_test_suite(active_id) {
     // var form_data = new Array();
     return false;
 }
-
-// 提交表单
-function add_test_suite() {
-    $.ajax(
-        {
-            url: "/add_test_suite.json",
-            data: {"run_type": $("#run_type").val(), "name": $("#name").val(), "description": $("#description").val()},
-            type: "post",
-            beforeSend: function () {
-                $("#tip").html("<span style='color:blue'>正在处理...</span>");
-                return true;
-            },
-            success: function (data) {
-                var data = data;
-                if (data.code == 200) {
-                    alert('新增成功，请关联用例!');
-                    window.location.href = ('/attach_test_batch?test_suite_id=' + data.ext);
-                } else {
-                    alert(data.msg);
-                }
-            },
-            error: function () {
-                alert('请求出错');
-            },
-            complete: function () {
-                $('#acting_tips').hide();
-            }
-        });
-
-    return false;
-}
-
-//function runtest1(id){
-//alert(id);
-//}
 
 function runtest(test_suite_id) {
     $.ajax(

@@ -29,20 +29,28 @@ class test_case_manage:
         return result
 
     def update_test_case(self, id, fieldlist, valueList):
+        import re
         update_value = '%s = "%s"' % (fieldlist[0], valueList[0])
         for i in range(1, len(fieldlist)):
             if fieldlist[i] == 'steps':
                 valueList[i] = valueList[i].replace('\\', '\\\\')
             update_value += ', %s = "%s"' % (fieldlist[i], valueList[i])
-        strings_to_remove = ['project = "测试项目名称", ', 'module = "模块一", ']
-        result_string = update_value
-        for string_to_remove in strings_to_remove:
-            result_string = result_string.replace(string_to_remove, '')
-        sql = string.Template('UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
+        match = re.search(r'project\s*=\s*"([^"]+)", module\s*=\s*"([^"]+)"', update_value)
+        if match:  # 编辑测试用例操作
+            strings_to_remove = [f'project = "{match.group(1)}", ', f'module = "{match.group(2)}", ']
+            result_string = update_value
+            for string_to_remove in strings_to_remove:
+                result_string = result_string.replace(string_to_remove, '')
+            result_string = result_string.replace('name', 't.name')
+            result_string = result_string.replace('steps', 't.steps')
+            result_string = result_string.replace('description', 't.description')
+            result_string = result_string.replace('isPublicFunction', 't.isPublicFunction')
+        else:  # 删除测试用例操作
+            result_string = update_value
+        sql = string.Template(
+            'UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
         sql = sql.substitute(field=result_string, id=id)
         useDB.useDB().insert(sql)
-        # sql = sql.substitute(field=update_value, id=id)
-        # useDB.useDB().insert(sql)
 
     def search_test_case(self, idList, fieldlist):
         id_value = str(idList[0])
@@ -81,8 +89,8 @@ class test_case_manage:
                 search_value = search_value + 't.id, '
             elif fieldlist[i] == 'project':
                 search_value = search_value + 'p.project_name project, '
-            elif fieldlist[i] =='module':
-                search_value = search_value +'m.module_name module, '
+            elif fieldlist[i] == 'module':
+                search_value = search_value + 'm.module_name module, '
             elif fieldlist[i] == 'name':
                 search_value = search_value + '`name`'
             else:
@@ -101,7 +109,7 @@ class test_case_manage:
                     # condition += str(conditionList[i]) + ' in (' + str(moduleList) + ')'
                     pass
                 else:
-                    if conditionList[i] == 'id': # id前需加表别名t
+                    if conditionList[i] == 'id':  # id前需加表别名t
                         condition += str('t.' + conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
                     else:
                         condition += str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
@@ -119,7 +127,7 @@ class test_case_manage:
                         if j:
                             projectList += ','
                         projectList += '"' + valueList[i][j] + '"'
-                    condition +=' and '+ 'p.project_name' +' in (' + str(projectList) + ')'
+                    condition += ' and ' + 'p.project_name' + ' in (' + str(projectList) + ')'
                 else:
                     condition += ' and ' + str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
         # 返回的列表 [{}] 类型

@@ -7,10 +7,10 @@ class test_suite_manage:
         self.status = 0
         self.name = ''
 
-    def new_test_suite(self, name, run_type, description, batchId):
+    def new_test_suite(self, project, module, name, run_type, description, batchId):
         sql = string.Template(
-            'insert into test_suite (name,run_type,description,batchId) values ("$name","$run_type","$description","$batchId");')
-        sql = sql.substitute(name=name, run_type=run_type, description=description, batchId=batchId)
+            'INSERT INTO test_suite (project_id,module_id,`name`,run_type,description,batchId) SELECT p.id, m.id, "${name}", "${run_type}", "${description}", "${batchId}" FROM module m INNER JOIN project p ON m.project_id=p.id WHERE p.project_name="${project}" AND m.module_name="${module}";')
+        sql = sql.substitute(project=project, module=module, name=name, run_type=run_type, description=description, batchId=batchId)
         useDB.useDB().insert(sql)
 
     def update_test_suite(self, id, fieldlist, valueList):
@@ -49,11 +49,16 @@ class test_suite_manage:
     def show_test_suites(self, conditionList, valueList, fieldlist, rows):
         fieldlist = []
         if len(fieldlist) == 0:
-            fieldlist = ['id', 'name', 'status', 'run_type', 'description', 'batchId']
-        search_value = fieldlist[0]
+            fieldlist = ['id', 'project', 'module', 'name', 'status', 'run_type', 'description', 'batchId']
+        search_value = 't.' + fieldlist[0]
         log.log().logger.info(fieldlist)
         for i in range(1, len(fieldlist)):
-            search_value = search_value + ',' + fieldlist[i]
+            if fieldlist[i] == 'project':
+                search_value = search_value + ',p.' + fieldlist[i] + '_name'
+            elif fieldlist[i] =='module':
+                search_value = search_value + ',m.' + fieldlist[i] + '_name'
+            else:
+                search_value = search_value + ',t.' + fieldlist[i]
         condition = 'isDeleted = 0 '
         for i in range(len(conditionList)):
             if len(valueList[i]):
@@ -65,40 +70,42 @@ class test_suite_manage:
                     elif valueList[i] == 'iOS':
                         valueList[i] = 1
                 if conditionList[i] in ('id', 'status', 'run_type'):
-                    condition += ' and ' + str(conditionList[i]) + ' = "' + str(valueList[i]) + '"'
+                    condition += ' AND ' + str(conditionList[i]) + ' = "' + str(valueList[i]) + '"'
                 else:
-                    condition += ' and ' + str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
+                    condition += ' AND ' + str(conditionList[i]) + ' LIKE "%' + str(valueList[i]) + '%"'
         results = []
-        sql = 'select ' + str(search_value) + ' from test_suite where ' + str(
-            condition) + ' order by id desc limit ' + str(rows) + ';'
+        sql = 'SELECT ' + str(search_value) + ' FROM test_suite t INNER JOIN module m ON t.module_id=m.id INNER JOIN project p ON t.project_id=p.id WHERE ' + str(
+            condition) + ' ORDER BY id desc LIMIT ' + str(rows) + ';'
         cases = useDB.useDB().search(sql)
         log.log().logger.info('cases : %s ' % cases)
         for i in range(len(cases)):
             result = {}
             result['id'] = cases[i][0]
-            result['name'] = cases[i][1]
-            if cases[i][2] == 0:
+            result['project'] = cases[i][1]
+            result['module'] = cases[i][2]
+            result['name'] = cases[i][3]
+            if cases[i][4] == 0:
                 status = '0-准备执行'
-            elif cases[i][2] == 1:
+            elif cases[i][4] == 1:
                 status = '1-执行完成'
-            elif cases[i][2] == 2:
+            elif cases[i][4] == 2:
                 status = '2-执行中'
-            elif cases[i][2] == -1:
+            elif cases[i][4] == -1:
                 status = '未执行'
             else:
                 status = 'unknown'
             result['status'] = status
-            if cases[i][3] == '0':
+            if cases[i][5] == '0':
                 run_type = 'Android'
-            elif cases[i][3] == '1':
+            elif cases[i][5] == '1':
                 run_type = 'iOS'
-            elif cases[i][3] == '2':
+            elif cases[i][5] == '2':
                 run_type = 'Chrome'
             else:
-                run_type = cases[i][3]
+                run_type = cases[i][5]
             result['run_type'] = run_type
-            result['description'] = cases[i][4]
-            result['batchId'] = cases[i][5]
+            result['description'] = cases[i][6]
+            result['batchId'] = cases[i][7]
             results.append(result)
         # log.log().logger.info(results)
         return results
