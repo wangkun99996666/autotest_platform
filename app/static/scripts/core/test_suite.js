@@ -1,5 +1,5 @@
 function searchProjectName() {
-    var project_name = $('#selectProject').val();
+    var project_name = $('#project').val();
     $.ajax({
         url: "/search_project_name",
         method: "POST",
@@ -8,7 +8,7 @@ function searchProjectName() {
         data: JSON.stringify({"projectName": project_name}),
         success: function (data) {
             var name = data.projectName;
-            var selectElement = $('#selectProject');
+            var selectElement = $('#project');
             if (name === 't') {
                 //    处理无项目情况
             } else {
@@ -44,7 +44,7 @@ function searchProjectName() {
 function searchModuleName() {
     var project_name = $('#selectProject').val();
     var module_name = $('#selectModule').val();
-    var selectElement = $('#selectModule');
+    var selectElement = $('#module');
     $.ajax({
         url: "/search_module_name",
         method: "POST",
@@ -73,6 +73,8 @@ $(function () {
     //1.初始化Table
     var oTable = new TableInit();
     oTable.Init();
+    searchProjectName();
+    searchModuleName();
 });
 
 function get_test_suite_detail(id) {
@@ -308,31 +310,23 @@ function copy_test_suite(test_suite_id) {
     $.ajax(
         {
             url: "/copy_test_suite",
-            data: {"id": test_suite_id},
-            type: "post",
+            data: JSON.stringify({"id": test_suite_id}),
+            type: "POST",
             dataType: "json",
+            contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
                 return true;
             },
             success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    if (data.code == 200) {
-                        alert('success!');
-                        document.location.reload();
-                    } else {
-                        alert('code is :' + data.code + ' and message is :' + data.msg);
-                    }
-
-
+                if (data.code == 200) {
+                    window.alert('success!');
+                    document.location.reload();
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    window.alert('code is :' + data.code + ' and message is :' + data.msg);
                 }
             },
-            error: function () {
-                alert('请求出错');
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.alert('请求出错');
             },
             complete: function () {
                 // $('#tips').hide();

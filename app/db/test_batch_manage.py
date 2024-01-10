@@ -158,7 +158,7 @@ class test_batch_manage(object):
         run_type = test_suite_manage.test_suite_manage().search_test_suite(test_suite_id, 'run_type')
         if run_type == 'Chrome':
             test_case_id_list = self.remove_android(test_case_id_list)
-        log.log().logger.info('%s, %s' % (test_case_id_list, len(test_case_id_list)))
+        # log.log().logger.info('%s, %s' % (test_case_id_list, len(test_case_id_list)))
         if len(test_case_id_list) == 0:
             result = 0
         else:
@@ -197,20 +197,23 @@ class test_batch_manage(object):
         return result
 
     def remove_android(self, test_case_id_list):
-        caseList = ''
-        for i in range(len(test_case_id_list)):
-            if i:
-                caseList = caseList + ',' + str(test_case_id_list[i])
-            else:
-                caseList = caseList + str(test_case_id_list[i])
-        sql = 'select id from test_case where module !="android" and id in (%s);' % caseList
-        result = useDB.useDB().search(sql)
-        log.log().logger.info(result)
         newIdList = []
-        for id in result:
-            newIdList.append(id[0])
-        log.log().logger.info(newIdList)
-        return newIdList
+        if test_case_id_list:
+            caseList = ''
+            for i in range(len(test_case_id_list)):
+                if i:
+                    caseList = caseList + ',' + str(test_case_id_list[i])
+                else:
+                    caseList = caseList + str(test_case_id_list[i])
+            sql = 'SELECT id FROM test_case WHERE module !="android" AND id IN (%s);' % caseList
+            result = useDB.useDB().search(sql)
+            log.log().logger.info(result)
+            for id in result:
+                newIdList.append(id[0])
+            log.log().logger.info(newIdList)
+            return newIdList
+        else:
+            return newIdList
 
     def show_test_batch(self, conditionList, valueList, fieldlist, rows):
         if len(fieldlist) == 0:
@@ -307,7 +310,7 @@ class test_batch_manage(object):
         return results
 
     def copy_test_batch(self, new_test_suite_id, old_test_suite_id):
-        sql = 'select test_case_id from test_batch where test_suite_id = "%s";' % old_test_suite_id
+        sql = 'SELECT test_case_id FROM test_batch WHERE test_suite_id = "%s";' % old_test_suite_id
         result = useDB.useDB().search(sql)
         log.log().logger.info(result)
         idList = []

@@ -80,8 +80,9 @@ class mysqlDB(object):
             values = cursor.fetchall()
             cursor.close()
             conn.close()
-        except:
+        except Exception as e:
             log.log().logger.error('search error--->' + str(sql))
+            log.log().logger.error(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -101,7 +102,7 @@ class mysqlDB(object):
             cursor.close()
             conn.commit()
         except Exception as e:
-            log.log().logger.error('commit error--->' + str(sql))
+            log.log().logger.error('insert error--->' + str(sql))
             log.log().logger.error(str(e))
             return False
         finally:
@@ -119,8 +120,9 @@ class mysqlDB(object):
             cursor.execute(sql)
             cursor.close()
             conn.commit()
-        except:
-            log.log().logger.error('commit error--->' + str(sql))
+        except Exception as e:
+            log.log().logger.error('exectesql error--->' + str(sql))
+            log.log().logger.error(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -135,8 +137,9 @@ class mysqlDB(object):
             cursor.execute(sql, args)
             values = cursor.fetchall()
             cursor.close()
-        except:
-            log.log().logger.error('select error--->' + str(sql))
+        except Exception as e:
+            log.log().logger.error('selectsql error--->' + str(sql))
+            log.log().logger.error(str(e))
         finally:
             if cursor:
                 cursor.close()

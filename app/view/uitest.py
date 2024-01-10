@@ -113,21 +113,12 @@ def copy_test_case():
         return result
 
 
-@mod.route('/copy_test_suite', methods=['POST', 'GET'])
+@mod.route('/copy_test_suite', methods=['POST'])
 @user.authorize
 def copy_test_suite():
-    log.log().logger.info(request)
-    log.log().logger.info(request.method)
-    # log.log().logger.info(request.value)
-    if request.method == 'GET':
-        log.log().logger.info('post')
-        result = jsonify({'code': 500, 'msg': 'should be get!'})
-        return result
     if request.method == 'POST':
-        info = request.form
-        log.log().logger.info('info :  %s' % info)
+        info = request.json
         id = viewutil.getInfoAttribute(info, 'id')
-        log.log().logger.info("id: %s" % id)
         if id == '':
             result = jsonify({'code': 500, 'msg': 'test suite is not found!'})
         else:
@@ -141,8 +132,6 @@ def copy_test_suite():
                 log.log().logger.info('ext is: %s, id is: %s' % (ext, id))
                 if ext != '0':
                     test_batch_manage.test_batch_manage().copy_test_batch(ext, id)
-                message = 'success！'
-                code = 200
                 result = jsonify({'code': 200, 'msg': 'copy success!'})
             else:
                 result = jsonify({'code': 500, 'msg': 'test suite is not found!'})
@@ -409,11 +398,9 @@ def test_batch_detail():
 def attach_test_batch():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         info = request.values
-        log.log().logger.info('info :  %s' % info)
         id = viewutil.getInfoAttribute(info, 'test_suite_id')
-        log.log().logger.info('id: %s' % id)
         return render_template("uitest/attach_test_batch.html", id=id)
     else:
         return render_template("uitest/test_suite.html")

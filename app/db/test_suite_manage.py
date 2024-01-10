@@ -10,7 +10,8 @@ class test_suite_manage:
     def new_test_suite(self, project, module, name, run_type, description, batchId):
         sql = string.Template(
             'INSERT INTO test_suite (project_id,module_id,`name`,run_type,description,batchId) SELECT p.id, m.id, "${name}", "${run_type}", "${description}", "${batchId}" FROM module m INNER JOIN project p ON m.project_id=p.id WHERE p.project_name="${project}" AND m.module_name="${module}";')
-        sql = sql.substitute(project=project, module=module, name=name, run_type=run_type, description=description, batchId=batchId)
+        sql = sql.substitute(project=project, module=module, name=name, run_type=run_type, description=description,
+                             batchId=batchId)
         useDB.useDB().insert(sql)
 
     def update_test_suite(self, id, fieldlist, valueList):
@@ -55,13 +56,13 @@ class test_suite_manage:
         for i in range(1, len(fieldlist)):
             if fieldlist[i] == 'project':
                 search_value = search_value + ',p.' + fieldlist[i] + '_name'
-            elif fieldlist[i] =='module':
+            elif fieldlist[i] == 'module':
                 search_value = search_value + ',m.' + fieldlist[i] + '_name'
             else:
                 search_value = search_value + ',t.' + fieldlist[i]
         condition = 'isDeleted = 0 '
         for i in range(len(conditionList)):
-            if len(valueList[i]):
+            if len(str(valueList[i])):
                 if conditionList[i] == 'run_type':
                     if valueList[i] == 'Chrome':
                         valueList[i] = 2
@@ -70,12 +71,17 @@ class test_suite_manage:
                     elif valueList[i] == 'iOS':
                         valueList[i] = 1
                 if conditionList[i] in ('id', 'status', 'run_type'):
-                    condition += ' AND ' + str(conditionList[i]) + ' = "' + str(valueList[i]) + '"'
+                    condition += ' AND t.' + str(conditionList[i]) + ' = "' + str(valueList[i]) + '"'
                 else:
+                    if conditionList[i] == 'project':
+                        conditionList[i] = 'p.project_name'
+                    elif conditionList[i] == 'module':
+                        conditionList[i] = 'm.module_name'
                     condition += ' AND ' + str(conditionList[i]) + ' LIKE "%' + str(valueList[i]) + '%"'
         results = []
-        sql = 'SELECT ' + str(search_value) + ' FROM test_suite t INNER JOIN module m ON t.module_id=m.id INNER JOIN project p ON t.project_id=p.id WHERE ' + str(
-            condition) + ' ORDER BY id desc LIMIT ' + str(rows) + ';'
+        sql = 'SELECT ' + str(
+            search_value) + ' FROM test_suite t INNER JOIN module m ON t.module_id=m.id INNER JOIN project p ON t.project_id=p.id WHERE ' + str(
+            condition) + ' ORDER BY t.id desc LIMIT ' + str(rows) + ';'
         cases = useDB.useDB().search(sql)
         log.log().logger.info('cases : %s ' % cases)
         for i in range(len(cases)):
@@ -131,7 +137,8 @@ class test_suite_manage:
                 run_type = 0
             elif result["run_type"] == 'iOS':
                 run_type = 1
-            self.new_test_suite(result["name"], str(run_type), result["description"], batchId)
+            self.new_test_suite(result['project'], result['module'], result["name"], str(run_type),
+                                result["description"], batchId)
             result = 1
         else:
             result = 0
