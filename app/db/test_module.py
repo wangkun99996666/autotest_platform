@@ -35,6 +35,10 @@ class test_module_manage:
 
     def search_module(self, project_name='', module_name=''):
         # 点击进入模块页面使用的sql
+        if project_name == 'All':
+            project_name = ''
+        if module_name == 'All':
+            module_name = ''
         if project_name == '' and module_name == '':
             sql = 'SELECT m.id, m.module_name, m.module_description, m.module_creator, m.creator_time, p.project_name FROM module m LEFT JOIN project p ON m.project_id = p.id;'
         elif len(project_name) > 0 and len(module_name) == 0:

@@ -26,13 +26,13 @@
                     <div class="form-group" style="margin-top:15px">
                         <label class="control-label col-sm-1" for="selectProject">项目</label>
                         <div class="col-sm-1">
-                            <select class="form-control" onchange="selectOnchang(this)" id="selectProject">
+                            <select class="form-control" onchange="$('#selectModule').empty();searchModuleName()" id="selectProject">
                                 <option value="All">All</option>
                             </select>
                         </div>
                         <label class="control-label col-sm-1" for="selectModule">模块</label>
                         <div class="col-sm-1">
-                            <select class="form-control" onchange="selectOnchang(this)" id="selectModule">
+                            <select class="form-control" id="selectModule">
                                 <option value="All">All</option>
                             </select>
                         </div>

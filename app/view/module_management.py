@@ -75,9 +75,13 @@ def searchModuleName():
     首次进入模块页面使用
     """
     info = request.json
-    projectName = info.get("projectName", "All")
-    module_name = info.get("module_name", "All")
-    resuletset = test_module.test_module_manage().search_module()
+    projectName = info.get("projectName", "")
+    module_name = info.get("module_name", "")
+    if projectName is None:
+        projectName = ""
+    if module_name is None:
+        module_name = ""
+    resuletset = test_module.test_module_manage().search_module(projectName, module_name)
     resultList = [{"name": res[1]} for res in resuletset]
     return jsonify({"code": 200, "message": resultList})
 

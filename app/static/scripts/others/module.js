@@ -80,7 +80,7 @@ function searchModuleName() {
         method: "POST",
         contentType: "application/json",
         dataType: "json",
-        data: JSON.stringify({projectName: project_name.toString(), module_name: module_name}),
+        data: JSON.stringify({projectName: project_name, module_name: module_name}),
         success: function (data) {
             if (data.code == "200"){
                 var op = [];
