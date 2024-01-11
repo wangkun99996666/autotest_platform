@@ -17,6 +17,8 @@
     <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
     <script>window.onload = function () {
         document.getElementById('btn_reset').click();
+        searchProjectName();
+        searchModuleName();
     }</script>
 
 {% endblock %}
@@ -37,7 +39,7 @@
                 <label for="type" class="col-sm-2 control-label">用例类型</label>
                 <div class="col-sm-10">
                     <select class="form-control required" name="type" id="type"
-                            onchange="if(this.value != '') setProjectAndModule(this.options[this.selectedIndex].value);">
+                            onchange="setProjectAndModule(this.options[this.selectedIndex].value);">
                         <option value="">-请选择-</option>
                         <option value="普通用例">普通用例</option>
                         <option value="公共用例">公共用例</option>
@@ -48,7 +50,7 @@
                 <label for="module" class="col-sm-2 control-label">所属项目</label>
                 <div class="col-sm-10">
                     <select class="form-control required" name="project" id="project">
-                        <option value="">-请选择-</option>
+                        <option value="All">-All-</option>
                     </select>
                 </div>
             </div>
@@ -56,7 +58,7 @@
                 <label for="module" class="col-sm-2 control-label">所属模块</label>
                 <div class="col-sm-10">
                     <select class="form-control required" name="module" id="module">
-                        <option value="">-请选择-</option>
+                        <option value="All">-All-</option>
                     </select>
                 </div>
             </div>

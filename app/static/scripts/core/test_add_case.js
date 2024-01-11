@@ -17,7 +17,7 @@ function getProjectName(name) {
                     projectArr.set(name, temp);
                 }
             }
-            setSelectOption('project', projectArr.get(name), '-请选择-');
+            setSelectOption('project', projectArr.get(name), '-All-');
         }
     });
 }
@@ -38,7 +38,7 @@ function getModuleName(name) {
                 }
                 moduleArr.set(name, temp);
             }
-            setSelectOption('module', moduleArr.get(name), '-请选择-');
+            setSelectOption('module', moduleArr.get(name), '-All-');
         }
     });
 
@@ -355,8 +355,7 @@ function changeValue(obj, order) {
             select.setAttribute("class", "method");
             method.textContent = '';
             method.appendChild(select);
-        }
-        else if (methodSelect.length == 1 && methodSelect[0].innerText == '') {
+        } else if (methodSelect.length == 1 && methodSelect[0].innerText == '') {
             method.removeChild(methodSelect[0]);
             select = selectOptions(['id', 'name', 'class', 'xpath', 'text', 'css'], 'id');
             select.setAttribute('onchange', 'change(this,"' + order + '");');
@@ -364,8 +363,7 @@ function changeValue(obj, order) {
             method.textContent = '';
             method.appendChild(select);
         }
-    }
-    else if (keyword == '公共方法') {
+    } else if (keyword == '公共方法') {
         var publicSelect = method.getElementsByClassName('method');
         var publicFuntions = getPublicFunctions();
         if (publicSelect.length == 0) {
@@ -375,8 +373,7 @@ function changeValue(obj, order) {
             method.textContent = '';
             method.appendChild(select);
         } // todo: 这里可以增强
-    }
-    else {
+    } else {
         methodSelect = method.getElementsByClassName('method');
         if (methodSelect.length == 1) {
             method.removeChild(methodSelect[0]);
@@ -422,8 +419,7 @@ function change(obj, order) {
     var method;
     if (methodSelect.length == 1 && methodSelect[0].innerText != '') {  // 后面的判断防止公共方法为空的情况，导致出错
         method = methodSelect[0].options[methodSelect[0].selectedIndex].value;
-    }
-    else {
+    } else {
         method = paras[0].textContent;
     }
     if (method != '') {
@@ -445,50 +441,39 @@ function get_edit_info(active_id) {
         window.alert('Error！');
         return false;
     }
-
     $.ajax(
         {
             url: "/test_case.json",
             data: {"id": active_id, "type": "test_case"},
-            type: "get",
+            type: "GET",
             dataType: "json",
             success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    var data_obj = data.rows;
-
-                    // 赋值
-                    $("#id").val(active_id);
-                    $("#name").val(data_obj.name);
-                    $("#steps").val(data_obj.steps);
-                    $("#description").val(data_obj.description);
-                    $("#type").val(data_obj.isPublic);
-                    var isPublic = data_obj.isPublic;
-                    if (isPublic == 1) {
-                        $("#type").val('公共用例');
-                        setModule('公共用例');
-                    } else {
-                        $("#type").val('普通用例');
-                        setModule('普通用例');
-                    }
-
+                var data_obj = data.rows;
+                // 赋值
+                $("#id").val(active_id);
+                $("#name").val(data_obj.name);
+                $("#steps").val(data_obj.steps);
+                $("#description").val(data_obj.description);
+                $("#type").val(data_obj.isPublic);
+                var isPublic = data_obj.isPublic;
+                if (isPublic == 1) {
+                    $("#type").val('公共用例');
+                    // setModule('公共用例');
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    $("#type").val('普通用例');
+                    // setModule('普通用例');
                 }
+                // $("#project").val(data_obj.project);
+                // $("#module").val(data_obj.module);
             },
             error: function () {
                 window.alert('请求出错');
             },
-            complete: function () {
-            }
         });
-
     return false;
 }
 
-function setModule(type)
-{
- setSelectOption('module', moduleArr.get(type), '-请选择-');
+function setModule(type) {
+    setSelectOption('module', moduleArr.get(type), '-All-');
+    setSelectOption('project', projectArr.get(type), '-All-');
 }

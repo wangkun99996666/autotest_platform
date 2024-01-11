@@ -49,7 +49,7 @@ class test_case_manage:
             result_string = update_value
         sql = string.Template(
             'UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
-        sql = sql.substitute(field=result_string, id=id)
+        sql = sql.substitute(field=result_string)
         useDB.useDB().insert(sql)
 
     def search_test_case(self, idList, fieldlist):
