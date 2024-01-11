@@ -149,50 +149,54 @@ class test_case_manage:
         return results
 
     def show_test_cases_unattach(self, test_suite_id, conditionList, valueList, fieldlist, rows):
-        fieldlist = ['id', 'module', 'name', 'steps', 'description', 'isPublicFunction']
+        fieldlist = ['t.id', 'p.project_name', 'm.module_name', 't.name', 't.steps', 't.description', 't.isPublicFunction']
         search_value = fieldlist[0]
         for i in range(1, len(fieldlist)):
-            search_value = search_value + ',' + fieldlist[i]
+            search_value = search_value + ', ' + fieldlist[i]
         results = []
-        log.log().logger.info('%s, %s, %s, %s, %s' % (test_suite_id, conditionList, valueList, fieldlist, rows))
         condition = ''
         for i in range(len(conditionList)):
             if i == 0:
                 if conditionList[i] == 'module':
-                    log.log().logger.info(valueList[i])
-                    moduleList = ''
-                    for j in range(len(valueList[i])):
-                        if j:
-                            moduleList += ','
-                        moduleList += '"' + valueList[i][j] + '"'
-                    condition += str(conditionList[i]) + ' in (' + str(moduleList) + ')'
+                    # log.log().logger.info(valueList[i])
+                    # moduleList = ''
+                    # for j in range(len(valueList[i])):
+                    #     if j:
+                    #         moduleList += ','
+                    #     moduleList += '"' + valueList[i][j] + '"'
+                    # condition += str(conditionList[i]) + ' IN (' + str(moduleList) + ')'
+                    pass
                 else:
-                    condition += str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
+                    if conditionList[i] == 'name':
+                       conditionList[i] = 't.' + conditionList[i]
+                    condition += str(conditionList[i]) + ' LIKE "%' + str(valueList[i]) + '%"'
             else:
                 if conditionList[i] == 'module':
+                    conditionList[i] = 'm.module_name'
                     log.log().logger.info(valueList[i])
                     moduleList = ''
                     for j in range(len(valueList[i])):
                         if j:
                             moduleList += ','
                         moduleList += '"' + valueList[i][j] + '"'
-                    condition += ' and ' + str(conditionList[i]) + ' in (' + str(moduleList) + ')'
+                    condition += ' AND ' + str(conditionList[i]) + ' IN (' + str(moduleList) + ')'
                 else:
-                    condition += ' and ' + str(conditionList[i]) + ' like "%' + str(valueList[i]) + '%"'
+                    condition += ' AND ' + str(conditionList[i]) + ' LIKE "%' + str(valueList[i]) + '%"'
         if condition != '':
-            condition += ' and '
-        sql = 'select ' + search_value + ' from test_case where status = 1 and isPublicFunction=0 and ' + str(
-            condition) + ' id not in (select distinct test_case_id from test_batch where test_suite_id = ' + test_suite_id + ' )  order by module desc;'
+            condition += ' AND '
+        sql = 'SELECT ' + search_value + ' FROM test_case t INNER JOIN module m ON t.module_id = m.id INNER JOIN project p ON t.project_id = p.id  WHERE t.status = 1 and T.isPublicFunction=0 AND ' + str(
+            condition) + ' t.id NOT IN (SELECT DISTINCT test_case_id FROM test_batch WHERE test_suite_id = ' + test_suite_id + ' )  ORDER BY t.module_id ASC;'
         cases = useDB.useDB().search(sql)
         log.log().logger.info('cases : %s' % cases)
         for i in range(len(cases)):
             result = {}
             result['id'] = cases[i][0]
-            result['module'] = cases[i][1]
-            result['name'] = cases[i][2]
-            result['steps'] = cases[i][3]
-            result['description'] = cases[i][4]
-            result['isPublic'] = cases[i][5]
+            result['project'] = cases[i][1]
+            result['module'] = cases[i][2]
+            result['name'] = cases[i][3]
+            result['steps'] = cases[i][4]
+            result['description'] = cases[i][5]
+            result['isPublic'] = cases[i][6]
             results.append(result)
         return results
 

@@ -205,7 +205,7 @@ class test_batch_manage(object):
                     caseList = caseList + ',' + str(test_case_id_list[i])
                 else:
                     caseList = caseList + str(test_case_id_list[i])
-            sql = 'SELECT id FROM test_case WHERE module !="android" AND id IN (%s);' % caseList
+            sql = 'SELECT t.id FROM test_case t INNER JOIN module m ON t.module_id = m.id INNER JOIN project p ON t.project_id=p.id WHERE m.module_name !="android" AND t.id IN (%s);' % caseList
             result = useDB.useDB().search(sql)
             log.log().logger.info(result)
             for id in result:

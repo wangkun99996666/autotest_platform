@@ -277,32 +277,18 @@ function runtest(test_suite_id) {
             data: {"id": test_suite_id, "type": "test_suite"},
             type: "get",
             dataType: "json",
-            beforeSend: function () {
-                return true;
-            },
             success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    if (data.code == 200) {
-                        alert('success!');
-                        document.location.reload();
-                    } else {
-                        alert('code is :' + data.code + ' and message is :' + data.msg);
-                    }
-
-
+                if (data.code == 200) {
+                    window.alert('success!');
+                    document.location.reload();
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    window.alert('code is :' + data.code + ' and message is :' + data.msg);
                 }
+
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
-            complete: function () {
-                // $('#tips').hide();
-            }
         });
 }
 

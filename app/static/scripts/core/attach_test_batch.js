@@ -10,14 +10,14 @@ function getDevices() {
             },
             success: function (data) {
 
-                var ipList = data["msg"]
+                var ipList = data["msg"];
                 $("#ipList").html("");
                 var option_group = '';
-                var optionInit = '<option value="">-请选择-</option>'
+                var optionInit = '<option value="">-请选择-</option>';
                 for (var j = 0; j < ipList.length; j++) {
                     var selectdata = ipList[j];
-                    var ip = ipList[j]["ip"]
-                    var model = ipList[j]["model"]
+                    var ip = ipList[j]["ip"];
+                    var model = ipList[j]["model"];
                     var option = '<option value="' + ip + '">' + model + '</option>';
                     option_group += option;
                 }
@@ -26,11 +26,8 @@ function getDevices() {
 
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
-            complete: function () {
-                // $('#tips').hide();
-            }
         });
 }
 
@@ -51,16 +48,6 @@ function initPage(test_suite_id) {
 
 
 }
-
-//
-//function iniImage(lenth, i, pro){
-//if (lenth>1){
-//
-//}
-//else{
-//alert("only one page!");
-//}
-//}
 
 
 var TableInit = function (test_suite_id) {
@@ -98,6 +85,9 @@ var TableInit = function (test_suite_id) {
                 field: 'id',
                 title: 'id'
             }, {
+                field: 'project',
+                title: '项目'
+            }, {
                 field: 'module',
                 title: '模块'
             }, {
@@ -128,84 +118,54 @@ var TableInit = function (test_suite_id) {
     return oTableInit;
 };
 
-//
-//var ButtonInit = function () {
-//    var oInit = new Object();
-//    var postdata = {};
-//
-//    oInit.Init = function () {
-//        //初始化页面上面的按钮事件
-//    };
-//
-//    return oInit;
-//};
+function get_multiple_select_value(objSelectId) {
+    var objSelect = document.getElementById(objSelectId);
+    var length = objSelect.options.length;
+    var value = '';
+    for (var i = 0; i < length; i++) {
+        if (objSelect.options[i].selected == true) {
+            if (value == '') {
+                value = objSelect.options[i].value;
+            } else {
+                value = value + ',' + objSelect.options[i].value;
+            }
 
-//
-//function get_multiple_select_value(objSelectId){
-//var objSelect = document.getElementById(objSelectId);
-//var length = objSelect.options.length;
-//var value = '';
-//for(var i=0;i<length;i++){
-//    if(objSelect.options[i].selected==true){
-//    if(value==''){
-//    value = objSelect.options[i].value;
-//    }else{
-//    value = value+','+objSelect.options[i].value;}
-//
-//    }
-//}
-//return value;
-//}
+        }
+    }
+    return value;
+}
 
 
 // 编辑表单
 function get_edit_info(active_id) {
-
     if (!active_id) {
-        alert('Error！');
+        window.alert('Error！');
         return false;
     }
-
     $.ajax(
         {
-            url: "test_suite.json",
+            url: "/test_suite.json",
             data: {"id": active_id},
             type: "get",
             dataType: "json",
-            beforeSend: function () {
-                return true;
-            },
-            success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    var data_obj = data.rows
-
-                    // 赋值
-                    $("#id").val(active_id);
-                    $("#name").val(data_obj.name);
-                    $("#run_type").val(data_obj.run_type);
-                    $("#description").val(data_obj.description);
-                    if (data_obj.run_type == 'Android') {
-                        getDevices();
-                    } else {
-                        $("#ipList").hide();
-//                   $("#btn_runIp_test").hide();
-                        $("#ipListLabel").hide();
-
-                    }
-
+            success: function (data, textStatus, jqXHR) {
+                var data_obj = data.rows;
+                // 赋值
+                $("#id").val(active_id);
+                $("#name").val(data_obj.name);
+                $("#run_type").val(data_obj.run_type);
+                $("#description").val(data_obj.description);
+                if (data_obj.run_type == 'Android') {
+                    getDevices();
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    $("#ipList").hide();
+                    $("#ipListLabel").hide();
                 }
             },
-            error: function () {
-                alert('请求出错');
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.alert('请求出错');
+                window.console.error(XMLHttpRequest, textStatus, errorThrown);
             },
-            complete: function () {
-                // $('#tips').hide();
-            }
         });
 
     return false;
@@ -220,13 +180,6 @@ function searchTestBatch1(test_suite_id) {
     });
 }
 
-//
-//function selectOnchang(obj){
-////获取被选中的option标签选项
-//var value = obj.options[obj.selectedIndex].value;
-////alert(value);
-//}
-
 function attachTestCase(test_suite_id) {
     var ipVal = get_multiple_select_value("ipList");
     var browser_list = get_multiple_select_value("browserList");
@@ -234,11 +187,8 @@ function attachTestCase(test_suite_id) {
     var a = $tb_departments.bootstrapTable('getSelections');
     var datarow = '';
     for (var i = 0; i < a.length; i++) {
-//        alert(a[i].id);
         datarow = datarow + ',' + a[i].id;
     }
-//    alert(test_suite_id);
-//    alert(datarow);
     if (a.length > 0) {
         $.ajax(
             {
@@ -251,103 +201,93 @@ function attachTestCase(test_suite_id) {
                 },
                 type: "get",
                 dataType: "json",
-                beforeSend: function () {
-                    return true;
-                },
                 success: function (data) {
-                    if (data) {
-                        // 解析json数据
-                        var data = data;
-                        if (data.code == 200) {
-                            alert('success!');
-                            document.location.reload();
-                        } else {
-                            alert('code is :' + data.code + ' and message is :' + data.msg);
-                        }
-
-
+                    if (data.code == 200) {
+                        window.alert('success!');
+                        document.location.reload();
                     } else {
-                        $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                        // alert('操作失败');
+                        window.alert('code is :' + data.code + ' and message is :' + data.msg);
                     }
                 },
                 error: function () {
-                    alert('请求出错');
+                    window.alert('请求出错');
                 },
-                complete: function () {
-                    // $('#tips').hide();
-                }
             });
     } else {
-        alert('no row is selected!');
+        window.alert('no row is selected!');
     }
 }
 
+function searchProjectName() {
+    var project_name = $('#selectProject').val();
+    $.ajax({
+        url: "/search_project_name",
+        method: "POST",
+        contentType: 'application/json',
+        dataType: "json",
+        data: JSON.stringify({"projectName": project_name}),
+        success: function (data) {
+            var name = data.projectName;
+            var selectElement = $('#selectProject');
+            if (name === 't') {
+                //    处理无项目情况
+            } else {
+                // 多个项目返回数组
+                if ((name.indexOf(", ")) !== -1) {
+                    var arr = name.split(', ');
+                    var op = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        op[i] = {value: arr[i], text: arr[i]};
+                    }
+                    // 遍历选项数据，创建并添加 option 元素
+                    $.each(op, function (index, option) {
+                        // 使用 append 方法添加 option 元素
+                        selectElement.append($('<option>', {
+                            value: option.value,
+                            text: option.text
+                        }));
+                    });
+                } else { // 单一项目情况
+                    selectElement.append($('<option>', {
+                        value: name,
+                        text: name
+                    }));
+                }
+            }
+        },
+        error: function (xhr, status, error) {
+            window.alert("请求出错....");
+        }
+    });
+}
 
-//
-// function removeOptions(selectObj)
-// {
-// if (typeof selectObj != 'object')
-// {
-// selectObj = document.getElementById(selectObj);
-// }
-// // 原有选项计数
-// var len = selectObj.options.length;
-// for (var i=0; i < len; i++) {
-// // 移除当前选项
-// selectObj.options[0] = null;
-// }
-// }
-// /*
-// * @param {String || Object]} selectObj 目标下拉选框的名称或对象，必须
-// * @param {Array} optionList 选项值设置 格式：[{txt:'北京', val:'010'}, {txt:'上海', val:'020'}] ，必须
-// * @param {String} firstOption 第一个选项值，如：“请选择”，可选，值为空
-// * @param {String} selected 默认选中值，可选
-// */
-// function setSelectOption(selectObj, optionList, firstOption, selected) {
-// if (typeof selectObj != 'object')
-// {
-// selectObj = document.getElementById(selectObj);
-// }
-// // 清空选项
-// removeOptions(selectObj);
-// // 选项计数
-// var start = 0;
-// // 如果需要添加第一个选项
-// if (firstOption) {
-// selectObj.options[0] = new Option(firstOption, '');
-// // 选项计数从 1 开始
-// start ++;
-// }
-// var len = optionList.length;
-// for (var i=0; i < len; i++) {
-// // 设置 option
-// selectObj.options[start] = new Option(optionList[i].txt, optionList[i].val);
-// // 选中项
-// if(selected == optionList[i].val)  {
-// selectObj.options[start].selected = true;
-// }
-// // 计数加 1
-// start ++;
-// }
-// }
-//
-//var moduleArr = [];
-//moduleArr['Android'] =
-//[
-// {txt:'Android', val:'android'}
-// ];
-//moduleArr['普通用例'] =
-//[
-// {txt:'setting', val:'setting'},
-// {txt:'data', val:'data'},
-// {txt:'system', val:'system'},
-// {txt:'userBehavior', val:'userBehavior'},
-// {txt:'monitor', val:'monitor'},
-//  {txt:'H5管理后台', val:'H5_back'},
-//  {txt:'H5平台', val:'H5_front'}
-// ];
-//function setModule(type)
-//{
-// setSelectOption('module', moduleArr[type], '-请选择-');
-//}
+function searchModuleName() {
+    var project_name = $('#selectProject').val();
+    var module_name = $('#selectModule').val();
+    var selectElement = $('#module');
+    $.ajax({
+        url: "/search_module_name",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({projectName: project_name, module_name: module_name}),
+        success: function (data) {
+            if (data.code == "200") {
+                var op = [];
+                for (var i = 0; i < data.message.length; i++) {
+                    op[i] = data.message[i].name;
+                }
+                $.each(op, function (index, option) {
+                    selectElement.append($("<option>", {
+                        value: op[index],
+                        text: op[index]
+                    }));
+                });
+            }
+        }
+    });
+}
+
+$(document).ready(function (test_suite_id) {
+    searchModuleName();
+});

@@ -479,7 +479,7 @@ function get_edit_info(active_id) {
                 }
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
             complete: function () {
             }

@@ -27,7 +27,7 @@
     <div class="panel-body" style="padding-bottom:0px;">
 
         <h1 style="text-align:center">关联测试用例</h1>
-        <font color="red"> 注意： 执行类型为 Chrome 时，不能关联 android 模块的用例， 否则无法执行！</font>
+{#        <font color="red"> 注意： 执行类型为 Chrome 时，不能关联 android 模块的用例， 否则无法执行！</font>#}
         <form class="form-horizontal" id="new_test_suite" action="/edit_test_suite" method="post">
             <div class="form-group">
                 <label for="type" class="col-sm-2 control-label">用例集ID</label>
@@ -36,9 +36,21 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="type" class="col-sm-2 control-label">用例集名称</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control readonly" id="name" name="name" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="run_type" class="col-sm-2 control-label">执行类型</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control required" id="run_type" name="run_type" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="type" class="col-sm-2 control-label">用例集描述</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control readonly" id="description" name="description" readonly="readonly">
                 </div>
             </div>
 
@@ -50,21 +62,20 @@
     <!--<div class="panel-heading">查询条件</div>-->
     <div class="panel-body">
         <form id="formSearch1" class="form-horizontal">
-            <div class="panel-heading">查询条件</div>
+            <div class="panel-heading"><h4>查询条件</h4></div>
             <div class="form-group" style="margin-top:15px">
                 <label for="type" class="control-label col-sm-1">执行类型</label>
                 <div class="col-sm-1">
-                    <select class="form-control required" name="type" id="type"
-                            onchange="if(this.value != '') setModule(this.options[this.selectedIndex].value);">
+                    <select class="form-control required" name="type" id="type">
                         <option value="">-请选择-</option>
                         <option value="普通用例">普通用例</option>
-                        <option value="Android">Android</option>
+{#                        <option value="Android">Android</option>#}
                     </select>
                 </div>
 
                 <label class="control-label col-sm-1" for="module">模块</label>
                 <div class="col-sm-1">
-                    <select class="form-control required" multiple name="module" id="module">
+                    <select class="form-control required" name="module" id="module">
                         <option value="">-请选择-</option>
                     </select>
                 </div>
@@ -79,7 +90,7 @@
                 </div>
                 <label class="control-label col-sm-1" for="browserList">浏览器列表</label>
                 <div class="col-sm-1">
-                    <select class="form-control required" multiple name="browserList" id="browserList">
+                    <select class="form-control required" name="browserList" id="browserList">
                         <option value="" selected="selected">-请选择-</option>
                         <option value="Chrome">Chrome</option>
                         <option value="Firefox">Firefox</option>
@@ -110,11 +121,6 @@
             </button>
         </div>
         <table id="tb_test_batch1"></table>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
     </div>
     <style>
         .error {
