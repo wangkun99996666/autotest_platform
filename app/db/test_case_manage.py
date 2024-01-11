@@ -48,8 +48,8 @@ class test_case_manage:
         else:  # 删除测试用例操作
             result_string = update_value
         sql = string.Template(
-            'UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = m.id, t.project_id = p.id, $field  WHERE t.id = "$id";')
-        sql = sql.substitute(field=result_string)
+            'UPDATE test_case t JOIN module m ON t.module_id = m.id JOIN project p ON t.project_id = p.id SET t.module_id = (SELECT m1.id FROM module m1 WHERE m1.module_name = "$module"), t.project_id = (select p1.id from project p1 where p1.project_name="$project"), $field  WHERE t.id = "$id";')
+        sql = sql.substitute(field=result_string, id=id, module=match.group(2), project=match.group(1))
         useDB.useDB().insert(sql)
 
     def search_test_case(self, idList, fieldlist):

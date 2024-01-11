@@ -537,7 +537,7 @@ def delete_test_suite():
 def view_test_suite_screenshot():
     log.log().logger.info(request)
     if request.method == 'GET':
-        log.log().logger.info('post')
+        log.log().logger.info('get')
         info = request.values
         log.log().logger.info('info : %s' % info)
         id = viewutil.getInfoAttribute(info, 'id')
