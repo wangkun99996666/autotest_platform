@@ -49,13 +49,13 @@
                         </div>
                         <label class="control-label col-sm-1" for="project">项目名称</label>
                         <div class="col-sm-2">
-                            <select class="form-control" onchange="selectOnchang(this)" id="project">
+                            <select class="form-control" onchange="$('#module').empty();searchModuleName()" id="project">
                                 <option value="All">-All-</option>
                             </select>
                         </div>
                         <label class="control-label col-sm-1" for="module">模块名称</label>
                         <div class="col-sm-2">
-                            <select class="form-control" onchange="selectOnchang(this)" id="module">
+                            <select class="form-control" id="module">
                                 <option value="All">-All-</option>
                             </select>
                         </div>

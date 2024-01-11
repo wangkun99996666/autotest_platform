@@ -42,8 +42,8 @@ function searchProjectName() {
 }
 
 function searchModuleName() {
-    var project_name = $('#selectProject').val();
-    var module_name = $('#selectModule').val();
+    var project_name = $('#project').val();
+    var module_name = $('#module').val();
     var selectElement = $('#module');
     $.ajax({
         url: "/search_module_name",
