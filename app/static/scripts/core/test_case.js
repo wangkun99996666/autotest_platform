@@ -1,3 +1,29 @@
+function searchModuleName() {
+    var project_name = $('#selectProject').val();
+    var module_name = $('#selectModule').val();
+    var selectElement = $('#selectModule');
+    $.ajax({
+        url: "/search_module_name",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({projectName: project_name, module_name: module_name}),
+        success: function (data) {
+            if (data.code == "200") {
+                var op = [];
+                for (var i = 0; i < data.message.length; i++) {
+                    op[i] = data.message[i].name;
+                }
+                $.each(op, function (index, option) {
+                    selectElement.append($("<option>", {
+                        value: op[index],
+                        text: op[index]
+                    }));
+                });
+            }
+        }
+    });
+}
 
 function searchProjectName() {
     var project_name = $('#selectProject').val();
@@ -42,33 +68,6 @@ function searchProjectName() {
     });
 }
 
-function searchModuleName() {
-    var project_name = $('#selectProject').val();
-    var module_name = $('#selectModule').val();
-    var selectElement = $('#selectModule');
-    $.ajax({
-        url: "/search_module_name",
-        method: "POST",
-        contentType: "application/json",
-        dataType: "json",
-        data: JSON.stringify({projectName: project_name, module_name: module_name}),
-        success: function (data) {
-            if (data.code == "200"){
-                var op = [];
-                for (var i = 0; i < data.message.length; i++) {
-                    op[i]=data.message[i].name;
-                }
-                $.each(op, function (index, option){
-                    selectElement.append($("<option>",{
-                        value: op[index],
-                        text: op[index]
-                    }));
-                });
-            }
-        }
-    });
-}
-
 $(function () {
 
     //1.初始化Table
@@ -76,7 +75,6 @@ $(function () {
     oTable.Init();
     searchProjectName();
     searchModuleName();
-
 });
 
 var TableInit = function () {
@@ -113,7 +111,7 @@ var TableInit = function () {
             }, {
                 field: 'id',
                 title: 'id'
-            },{
+            }, {
                 field: 'project',
                 title: '项目'
             }, {
@@ -169,41 +167,28 @@ function searchTestCase(test_case_id) {
 
 // 删除表单
 function delete_test_case(active_id) {
-    if (confirm("确认删除吗？")) {
+    if (window.confirm("确认删除吗？")) {
         if (!active_id) {
-            alert('Error！');
+            window.alert('Error！');
             return false;
         }
-
         $.ajax(
             {
                 url: "delete_test_case",
                 data: {"id": active_id, "act": "del"},
                 type: "post",
-                beforeSend: function () {
-                    $("#tip").html("<span style='color:blue'>正在处理...</span>");
-                    return true;
-                },
                 success: function (data) {
                     if (data.code = 200) {
-                        alert('恭喜，删除成功！');
-                        $("#tip").html("<span style='color:blueviolet'>恭喜，删除成功！</span>");
-
-
                         document.getElementById('btn_query').click();
                     } else {
                         $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                        alert('失败，请重试' + data.msg);
+                        window.alert('失败，请重试' + data.msg);
                     }
                 },
                 error: function () {
-                    alert('请求出错');
+                    window.alert('请求出错');
                 },
-                complete: function () {
-                    // $('#tips').hide();
-                }
             });
-
     }
     return false;
 }
@@ -213,34 +198,19 @@ function run_test_case(test_case_id) {
         {
             url: "/runtest.json",
             data: {"id": test_case_id, "type": "test_case"},
-            type: "get",
+            type: "GET",
             dataType: "json",
-            beforeSend: function () {
-                return true;
-            },
             success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    if (data.code == 200) {
-                        alert('success!');
-                        window.location.href = ('/test_case_runhistory?id=' + test_case_id);
-                    } else {
-                        alert('code is :' + data.code + ' and message is :' + data.msg);
-                    }
-
-
+                if (data.code == 200) {
+                    window.alert('success!');
+                    window.location.href = ('/test_case_runhistory?id=' + test_case_id);
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    window.alert('code is :' + data.code + ' and message is :' + data.msg);
                 }
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
-            complete: function () {
-                // $('#tips').hide();
-            }
         });
 }
 
@@ -255,26 +225,16 @@ function copy_test_case(test_case_id) {
                 return true;
             },
             success: function (data) {
-                if (data) {
-                    // 解析json数据
-                    var data = data;
-                    if (data.code == 200) {
-                        alert('success!');
-                        document.location.reload();
-                    } else {
-                        alert('code is :' + data.code + ' and message is :' + data.msg);
-                    }
+                if (data.code == 200) {
+                    window.alert('success!');
+                    document.location.reload();
                 } else {
-                    $("#tip").html("<span style='color:red'>失败，请重试</span>");
-                    // alert('操作失败');
+                    window.alert('code is :' + data.code + ' and message is :' + data.msg);
                 }
             },
             error: function () {
-                alert('请求出错');
+                window.alert('请求出错');
             },
-            complete: function () {
-                // $('#tips').hide();
-            }
         });
 }
 
