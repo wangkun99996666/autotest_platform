@@ -22,19 +22,19 @@ class extend():
         :return: Found element list.
         """
         method, value = para_list[0], para_list[1]
-        if 'css' in method:
+        if 'css' in method.lower():
             method = By.CSS_SELECTOR
-        elif 'class' in method:
+        elif 'class' in method.lower():
             method = By.CLASS_NAME
-        elif 'text' in method:
+        elif 'text' in method.lower():
             method = By.PARTIAL_LINK_TEXT
-        elif 'tag' in method:
+        elif 'tag' in method.lower():
             method = By.TAG_NAME
-        elif 'id' in method:
+        elif 'id' in method.lower():
             method = By.ID
-        elif 'xpath' in method:
+        elif 'xpath' in method.lower():
             method = By.XPATH
-        elif 'name' in method:
+        elif 'name' in method.lower():
             method = By.NAME
         elements = driver.find_elements(by=method, value=value)
         new_elements = []
@@ -98,7 +98,7 @@ class extend():
         if element.get_attribute(attribute) is not None:
             return text in element.get_attribute(attribute)
         else:
-            return None
+            return False
 
     def switchIframe(self, driver, para_list):
         """
@@ -108,19 +108,19 @@ class extend():
         :param para_list:  [method, value] eg : ['id','iframe-main']
         """
         method, value = para_list[0], para_list[1]
-        if method == 'css':
+        if method.lower() == 'css':
             method = By.CSS_SELECTOR
-        elif 'class' in method:
+        elif 'class' in method.lower():
             method = By.CLASS_NAME
-        elif 'text' in method:
+        elif 'text' in method.lower():
             method = By.PARTIAL_LINK_TEXT
-        elif 'tag' in method:
+        elif 'tag' in method.lower():
             method = By.TAG_NAME
-        elif 'id' in method:
+        elif 'id' in method.lower:
             method = By.ID
-        elif 'xpath' in method:
+        elif 'xpath' in method.lower:
             method = By.XPATH
-        elif 'name' in method:
+        elif 'name' in method.lower:
             method = By.NAME
         driver.switch_to.frame(driver.find_element(by=method, value=value))
         time.sleep(2)
