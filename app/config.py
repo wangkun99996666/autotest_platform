@@ -1,10 +1,10 @@
 # 数据库配置
 DBtype = '2'  # '1' : sqlite,  2: mysql
-db_host = '0.0.0.0'  # 生产环境注意修改此IP
+db_host = 'db'  # 生产环境注意修改此IP
 db_port = '3306'
 db_user = 'root'
 db_password = 'root'
-database = 'test_auto_new'
+database = 'web_ui_db'
 
 # atx 配置
 isUseATX = True

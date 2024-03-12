@@ -37,7 +37,6 @@ function delhub(value, row, index) {
 
 // submit form
 function addHub() {
-    $("#new_hub").validate();
     $.ajax(
         {
             url: "/add_hub.json",
@@ -48,10 +47,11 @@ function addHub() {
                 return true;
             },
             success: function (data) {
+                console.log(data);
                 if (data.code == 200) {
                     alert('恭喜，成功！');
                     // $("#tip").html("<span style='color:blueviolet'>恭喜，新增成功！</span>");
-                    window.location.href = ('/testhubs');
+                    window.location.href = '/testhubs';
                 } else {
                     $("#tip").html("<span style='color:red'>失败，请重试</span>");
                     alert('失败，请重试: ' + data.msg);

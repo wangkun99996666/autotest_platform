@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db
+    image: mysql:8.0.33
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: web_ui_db
+    ports:
+      - "8306:3306"
+#    volumes:
+#      - /home/wangkun/mysql/data:/var/lib/mysql
+#      - /home/wangkun/mysql/log:/var/log/mysql
+
+  selenium:
+    container_name: selenium
+    image: selenium/standalone-chrome:120.0
+    shm_size: '2gb'
+    ports:
+      - "7900:7900"
+      - "4444:4444"
+
+  webUI:
+    container_name: webserver
+    image: webserver:latest
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - selenium
